@@ -34,7 +34,9 @@ public class WorkspaceApiClientWhenAuthenticationDisabledIntegrationTests {
 
     @BeforeAll
     static void startStructurizrServer() throws Exception {
-        File structurizrDataDirectory = Files.createTempDirectory(WorkspaceApiClientWhenAuthenticationDisabledIntegrationTests.class.getSimpleName()).toFile();
+        File structurizrDataDirectory = Files
+                .createTempDirectory(WorkspaceApiClientWhenAuthenticationDisabledIntegrationTests.class.getSimpleName())
+                .toFile();
         structurizrDataDirectory.deleteOnExit();
 
         workspaceArchiveLocation = new File(structurizrDataDirectory.getAbsolutePath(), "archive");
@@ -143,7 +145,7 @@ public class WorkspaceApiClientWhenAuthenticationDisabledIntegrationTests {
 class StructurizrContainer extends GenericContainer<StructurizrContainer> {
 
     private static final String STRUCTURIZR_DOCKER_IMAGE = "structurizr/structurizr:preview";
-    private static final String PATH_IN_CONTAINER = "/usr/local/structurizr";
+    private static final String PATH_IN_CONTAINER = "/Users/anasiri2/structurizr";
 
     public StructurizrContainer(File structurizrDataDirectory) {
         super(DockerImageName.parse(STRUCTURIZR_DOCKER_IMAGE));

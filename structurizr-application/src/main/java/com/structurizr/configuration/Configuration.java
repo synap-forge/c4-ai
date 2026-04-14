@@ -26,7 +26,7 @@ public class Configuration {
     private static final String TRUE = "true";
     private static final String FALSE = "false";
 
-    public static final String DEFAULT_STRUCTURIZR_DATA_DIRECTORY = "/usr/local/structurizr";
+    public static final String DEFAULT_STRUCTURIZR_DATA_DIRECTORY = "/Users/anasiri2/structurizr";
     private static final String WORK_DIRECTORY_NAME = ".structurizr";
 
     private static final String PROPERTY_NAME_PREFIX = "structurizr.";
