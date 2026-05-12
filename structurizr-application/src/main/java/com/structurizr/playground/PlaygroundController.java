@@ -59,7 +59,7 @@ class PlaygroundController extends AbstractController {
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
     String postDsl(ModelMap model,
-                       @RequestParam(required = true) String dsl,
+                       @RequestParam(required = false, defaultValue = "") String dsl,
                        @RequestParam(required = false) String json,
                        @RequestParam(required = false, defaultValue = "") String view) throws Exception {
 

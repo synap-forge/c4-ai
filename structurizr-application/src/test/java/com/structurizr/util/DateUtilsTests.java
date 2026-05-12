@@ -10,8 +10,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class DateUtilsTests {
 

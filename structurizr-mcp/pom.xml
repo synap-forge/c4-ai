@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.9</version>
+    <version>4.0.6</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
@@ -22,7 +22,7 @@
     <app.revision>1.0.0</app.revision>
     <library.revision>6.0.0</library.revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.release>25</maven.compiler.release>
   </properties>
 
   <repositories>
@@ -37,7 +37,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.11.0</version>
+        <version>6.0.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -87,6 +87,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
+          <mainClass>com.structurizr.mcp.StructurizrMcpServer</mainClass>
           <requiresUnpack>
             <dependency>
               <groupId>org.jetbrains.kotlin</groupId>
