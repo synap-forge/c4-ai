@@ -3,14 +3,11 @@ package com.structurizr.importer.documentation;
 import com.structurizr.documentation.Documentable;
 import com.structurizr.documentation.Format;
 import com.structurizr.documentation.Section;
-import com.structurizr.util.StringUtils;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This implementation scans a given directory and automatically imports all Markdown or AsciiDoc
@@ -19,21 +16,6 @@ import java.util.Set;
  * See https://structurizr.com/help/documentation/headings for details of how section headings and numbering are handled.
  */
 public class DefaultDocumentationImporter implements DocumentationImporter {
-
-    private final Set<String> excludes = new HashSet<>();
-
-    /**
-     * Adds a regex to exclude files from the import process.
-     *
-     * @param regex     a regex as a String
-     */
-    public void exclude(String regex) {
-        if (StringUtils.isNullOrEmpty(regex)) {
-            throw new IllegalArgumentException("A regex must be provided.");
-        }
-
-        excludes.add(regex);
-    }
 
     /**
      * Imports Markdown/AsciiDoc files from the specified path, each in its own section.
@@ -86,7 +68,7 @@ public class DefaultDocumentationImporter implements DocumentationImporter {
     }
 
     protected void importFile(Documentable documentable, File file) throws Exception {
-        if (FormatFinder.isMarkdownOrAsciiDoc(file) && !excluded(file)) {
+        if (FormatFinder.isMarkdownOrAsciiDoc(file)) {
             Format format = FormatFinder.findFormat(file);
             String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 
@@ -94,16 +76,6 @@ public class DefaultDocumentationImporter implements DocumentationImporter {
             section.setFilename(file.getCanonicalPath());
             documentable.getDocumentation().addSection(section);
         }
-    }
-
-    private boolean excluded(File file) {
-        for (String exclude : excludes) {
-            if (file.getName().equals(exclude) || file.getName().matches(exclude)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
 }

@@ -2,7 +2,7 @@ package com.structurizr.server.web.workspace.authenticated;
 
 import com.structurizr.server.component.workspace.WorkspaceComponentException;
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.AbstractControllerTests;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,14 +10,14 @@ import org.springframework.ui.ModelMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AbstractWorkspaceControllerTests extends AbstractTestsBase {
+public class AbstractWorkspaceControllerTests extends AbstractControllerTests {
 
     private AbstractWorkspaceController controller;
     private ModelMap model;
 
     @BeforeEach
     public void setUp() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         controller = new AbstractWorkspaceController() {};
         model = new ModelMap();
     }
@@ -38,7 +38,7 @@ public class AbstractWorkspaceControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedView_ReturnsThe404Page_WhenAuthenticationIsEnabledAndTheUserIsAnonymous() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         workspaceMetaData.addWriteUser("user1@example.com");
@@ -56,7 +56,7 @@ public class AbstractWorkspaceControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedView_ReturnsThe404Page_WhenAuthenticationIsEnabledAndTheUserHasNoPermissions() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         workspaceMetaData.addWriteUser("user1@example.com");
@@ -80,7 +80,7 @@ public class AbstractWorkspaceControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedView_ReturnsTheView_WhenAuthenticationIsEnabledAndTheUserHasWritePermission() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         workspaceMetaData.addWriteUser("user1@example.com");
@@ -109,7 +109,7 @@ public class AbstractWorkspaceControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedView_ReturnsTheView_WhenAuthenticationIsEnabledAndTheUserHasReadPermission() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         workspaceMetaData.addReadUser("user1@example.com");
@@ -138,7 +138,7 @@ public class AbstractWorkspaceControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedView_ReturnsTheView_WhenAuthenticationIsDisabled() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
 

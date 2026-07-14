@@ -4,7 +4,7 @@ import com.structurizr.configuration.Configuration;
 import com.structurizr.configuration.Features;
 import com.structurizr.server.component.workspace.WorkspaceComponentException;
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import org.springframework.ui.ModelMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DslEditorControllerTests extends AbstractTestsBase {
+public class DslEditorControllerTests extends ControllerTestsBase {
 
     private DslEditorController controller;
     private ModelMap model;
@@ -25,7 +25,7 @@ public class DslEditorControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDslEditor_ReturnsAnErrorPage_WhenTheDslEditorHasBeenDisabled() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.UI_DSL_EDITOR);
         setUser("user@example.com");
 
@@ -36,7 +36,7 @@ public class DslEditorControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDslEditor_ReturnsThe404Page_WhenTheWorkspaceDoesNotExist() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.UI_DSL_EDITOR);
         setUser("user@example.com");
 
@@ -53,7 +53,7 @@ public class DslEditorControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDslEditor_ReturnsAnErrorPage_WhenTheWorkspaceIsClientSideEncrypted() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.UI_DSL_EDITOR);
         setUser("user@example.com");
 
@@ -72,7 +72,7 @@ public class DslEditorControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDslEditor_ReturnsThe404Page_WhenTheUserDoesNotHaveAccess() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.UI_DSL_EDITOR);
         setUser("user@example.com");
 
@@ -92,7 +92,7 @@ public class DslEditorControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDslEditor_ReturnsTheDslEditorPage_WhenAuthenticationIsDisabled()  {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.UI_DSL_EDITOR);
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
@@ -129,7 +129,7 @@ public class DslEditorControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDslEditor_ReturnsTheDslEditorPage_WhenTheWorkspaceHasNoUsersConfigured()  {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.UI_DSL_EDITOR);
         setUser("user@example.com");
 
@@ -167,7 +167,7 @@ public class DslEditorControllerTests extends AbstractTestsBase {
 
     @Test
     public void showAuthenticatedDslEditor_ReturnsTheDslEditorPage_WhenTheUserHasWriteAccess()  {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.UI_DSL_EDITOR);
         setUser("user@example.com");
 
@@ -207,7 +207,7 @@ public class DslEditorControllerTests extends AbstractTestsBase {
 
     @Test
     public void showAuthenticatedDslEditor_ReturnsAnErrorPage_WhenTheUserHasReadAccess()  {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.UI_DSL_EDITOR);
         setUser("user@example.com");
 

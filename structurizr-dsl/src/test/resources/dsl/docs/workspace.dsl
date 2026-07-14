@@ -5,9 +5,7 @@ workspace {
     model {
         user = person "User"
         softwareSystem = softwareSystem "Software System" {
-            !docs docs/softwaresystem {
-                exclude "README.md"
-            }
+            !docs docs/softwaresystem
 
             container "Container" {
                 !docs docs/softwaresystem/container {

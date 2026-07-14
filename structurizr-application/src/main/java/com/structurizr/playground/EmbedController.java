@@ -29,7 +29,6 @@ class EmbedController extends AbstractController {
         }
 
         model.addAttribute("publishThumbnails", false);
-        model.addAttribute("publishImages", false);
         model.addAttribute("showToolbar", editable);
 
         return "diagrams";

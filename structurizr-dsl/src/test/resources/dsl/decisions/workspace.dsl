@@ -1,24 +1,16 @@
 workspace {
 
-    !adrs adrtools com.structurizr.example.ExampleDecisionImporter {
-        exclude "README.md"
-    }
+    !adrs adrtools com.structurizr.example.ExampleDecisionImporter
 
     model {
         softwareSystem = softwareSystem "Software System" {
-            !decisions adrtools {
-                exclude "README.md"
-            }
+            !decisions adrtools
 
             container "Container" {
-                !decisions madr madr {
-                    exclude "README.*"
-                }
+                !decisions madr madr
 
                 component "Component" {
-                    !decisions log4brains log4brains {
-                        exclude "README.md"
-                    }
+                    !decisions log4brains log4brains
                 }
             }
         }

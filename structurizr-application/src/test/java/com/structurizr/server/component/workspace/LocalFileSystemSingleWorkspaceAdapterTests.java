@@ -28,7 +28,8 @@ class LocalFileSystemSingleWorkspaceAdapterTests extends AbstractWorkspaceAdapte
 
         Properties properties = new Properties();
         properties.setProperty(DATA_DIRECTORY, dataDirectory.getAbsolutePath());
-        configureAsLocal(properties);
+
+        Configuration.init(Profile.Local, properties);
 
         workspaceAdapter = new LocalFileSystemSingleWorkspaceAdapter();
     }
@@ -153,12 +154,7 @@ class LocalFileSystemSingleWorkspaceAdapterTests extends AbstractWorkspaceAdapte
     }
 
     @Override
-    void image_Branch() {
-        // not supported
-    }
-
-    @Override
-    void images_Branch() {
+    void image_Branch() throws Exception {
         // not supported
     }
 

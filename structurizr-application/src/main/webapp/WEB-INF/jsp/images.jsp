@@ -6,7 +6,7 @@
         <p>
             Structurizr supports the ability to embed diagrams via a static PNG/SVG file via a regular image tag in HTML, Markdown, AsciiDoc, etc.
             <br />
-            See <a href="https://docs.structurizr.com/server/diagrams/image-embed" target="_blank">server - Image embed</a> for more details.
+            See <a href="https://docs.structurizr.com/server/image-embed" target="_blank">server - Image embed</a> for more details.
         </p>
 
         <br />
@@ -32,7 +32,6 @@
         <c:if test="${workspace.editable}">
         <div class="centered">
             <form id="deleteImagesForm" class="form-inline small centered" style="display: inline-block; margin-bottom: 5px" action="/workspace/${workspace.id}/images/delete" method="post">
-                <input type="hidden" name="branch" value="${workspace.branch}" />
                 <button class="btn btn-danger" type="submit" name="action" value="delete" title="Delete published images"><img src="/static/bootstrap-icons/trash3.svg" class="icon-btn icon-white" /> Delete published images</button>
             </form>
         </div>

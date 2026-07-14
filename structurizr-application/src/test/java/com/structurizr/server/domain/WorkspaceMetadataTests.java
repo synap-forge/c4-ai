@@ -1,7 +1,8 @@
 package com.structurizr.server.domain;
 
+import com.structurizr.configuration.Configuration;
+import com.structurizr.configuration.Profile;
 import com.structurizr.configuration.StructurizrProperties;
-import com.structurizr.server.web.AbstractTestsBase;
 import com.structurizr.util.DateUtils;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +10,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class WorkspaceMetadataTests extends AbstractTestsBase {
+public class WorkspaceMetadataTests {
 
     @Test
     void getName_WhenNull() {
@@ -96,7 +97,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void hasNoUsersConfigured_ReturnsTrue_WhenTheWorkspaceHasNoConfiguredUsers() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         assertTrue(workspace.hasNoUsersConfigured());
@@ -104,7 +107,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void hasNoUsersConfigured_ReturnsFalse_WhenAuthenticationIsEnabledAndTheWorkspaceHasAReadOnlyUser() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         workspace.addReadUser("read@example.com");
@@ -113,7 +118,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void hasNoUsersConfigured_ReturnsFalse_WhenAuthenticationIsEnabledAndTheWorkspaceHasAReadWriteUser() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         workspace.addWriteUser("write@example.com");
@@ -122,7 +129,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void isReadUser_ReturnsFalse_WhenAuthenticationIsEnabledAndTheUserIsNotAReadUser() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         workspace.addReadUser("read@example.com");
@@ -133,7 +142,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void isReadUser_ReturnsTrue_WhenTheUserIsAReadUser() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         workspace.addReadUser("read@example.com");
@@ -144,7 +155,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void isReadUser_ReturnsFalse_WhenAuthenticationIsEnabledAndTheUserRoleIsNotAReadUser() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         workspace.addReadUser("role1");
@@ -155,7 +168,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void isReadUser_ReturnsTrue_WhenAuthenticationIsEnabledAndTheUserRoleIsAReadUser() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         workspace.addReadUser("role1");
@@ -166,7 +181,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void isWriteUser_ReturnsFalse_WhenAuthenticationIsEnabledAndTheUserIsNotAWriteUser() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         workspace.addWriteUser("write@example.com");
@@ -177,7 +194,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void isWriteUser_ReturnsTrue_WhenAuthenticationIsEnabledAndTheUserIsAWriteUser() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         workspace.addWriteUser("write@example.com");
@@ -188,7 +207,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void test_isWriteUser_ReturnsFalse_WhenAuthenticationIsEnabledAndTheUserRoleIsNotAWriteUser() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         workspace.addWriteUser("role1");
@@ -199,7 +220,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void test_isWriteUser_ReturnsTrue_WhenAuthenticationIsEnabledAndTheUserRoleIsAWriteUser() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata workspace = new WorkspaceMetadata(1);
         workspace.addWriteUser("role1");
@@ -370,7 +393,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
 
     @Test
     void getPermissions_WhenAuthenticationIsDisabled() {
-        configureAsServerWithAuthenticationEnabled();
+        Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_NONE);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata wmd = new WorkspaceMetadata(1);
         User user = new User("user@example.com");
@@ -383,8 +408,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
     @Test
     void getPermissions_WhenAuthenticationIsEnabled_AnonymousUser_NoWorkspaceUsers_NoAdminUsers() {
         Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
         properties.setProperty(StructurizrProperties.ADMIN_USERS_AND_ROLES, "");
-        configureAsServerWithAuthenticationEnabled(properties);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata wmd = new WorkspaceMetadata(1);
 
@@ -397,8 +423,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
     @Test
     void getPermissions_WhenAuthenticationIsEnabled_NoWorkspaceUsers_NoAdminUsers() {
         Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
         properties.setProperty(StructurizrProperties.ADMIN_USERS_AND_ROLES, "");
-        configureAsServerWithAuthenticationEnabled(properties);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata wmd = new WorkspaceMetadata(1);
 
@@ -411,8 +438,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
     @Test
     void getPermissions_WhenAuthenticationIsEnabled_NoWorkspaceUsers_AdminUsers() {
         Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
         properties.setProperty(StructurizrProperties.ADMIN_USERS_AND_ROLES, "admin@example.com");
-        configureAsServerWithAuthenticationEnabled(properties);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata wmd = new WorkspaceMetadata(1);
 
@@ -430,8 +458,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
     @Test
     void getPermissions_WhenAuthenticationIsEnabled_WorkspaceUsers_NoAdminUsers() {
         Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
         properties.setProperty(StructurizrProperties.ADMIN_USERS_AND_ROLES, "");
-        configureAsServerWithAuthenticationEnabled(properties);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata wmd = new WorkspaceMetadata(1);
         wmd.addWriteUser("write@example.com");
@@ -456,8 +485,9 @@ public class WorkspaceMetadataTests extends AbstractTestsBase {
     @Test
     void getPermissions_WhenAuthenticationIsEnabled_WorkspaceUsers_AdminUsers() {
         Properties properties = new Properties();
+        properties.setProperty(StructurizrProperties.AUTHENTICATION_IMPLEMENTATION, StructurizrProperties.AUTHENTICATION_VARIANT_FILE);
         properties.setProperty(StructurizrProperties.ADMIN_USERS_AND_ROLES, "admin@example.com");
-        configureAsServerWithAuthenticationEnabled(properties);
+        Configuration.init(Profile.Server, properties);
 
         WorkspaceMetadata wmd = new WorkspaceMetadata(1);
         wmd.addWriteUser("write@example.com");

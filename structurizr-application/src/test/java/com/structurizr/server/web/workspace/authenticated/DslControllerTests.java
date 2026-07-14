@@ -4,7 +4,7 @@ import com.structurizr.Workspace;
 import com.structurizr.dsl.DslUtils;
 import com.structurizr.server.component.workspace.WorkspaceComponentException;
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockHttpServletResponse;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import com.structurizr.util.WorkspaceUtils;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class DslControllerTests extends AbstractTestsBase {
+public class DslControllerTests extends ControllerTestsBase {
 
     private DslController controller;
     private MockHttpServletResponse response;
@@ -27,7 +27,7 @@ public class DslControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDsl_ReturnsA404_WhenTheWorkspaceDoesNotExist() throws Exception {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
             @Override
@@ -43,7 +43,7 @@ public class DslControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDsl_ReturnsTheDsl_WhenAuthenticationIsDisabled() throws Exception {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
 
@@ -72,7 +72,7 @@ public class DslControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDsl_ReturnsTheDsl_WhenAuthenticationIsEnabledAndTheUserHasAccess() throws Exception {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         setUser("user1@example.com");
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
@@ -103,7 +103,7 @@ public class DslControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDsl_ReturnsA404_WhenAuthenticationIsEnabledAndTheUserDoesNotHaveAccess() throws Exception {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         setUser("user2@example.com");
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);

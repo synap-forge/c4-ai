@@ -87,7 +87,6 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
     var currentFilter;
 
     var filter = {
-        id: 0,
         active: false,
         tags: [],
         perspective: undefined
@@ -973,8 +972,7 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
             self.zoomToWidthOrHeight();
         }
 
-        filter.id++;
-        runFilter(filter.id);
+        runFilter();
 
         // adjust any overlapping vertices, and bring all relationships to the front
         lines.forEach(function(line) {
@@ -1375,8 +1373,7 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
 
     this.showPerspective = function(perspective) {
         filter.perspective = perspective;
-        filter.id++;
-        runFilter(filter.id);
+        runFilter();
     };
 
     this.hasPerspective = function() {
@@ -1389,8 +1386,7 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
 
     this.clearPerspective = function() {
         filter.perspective = undefined;
-        filter.id++;
-        runFilter(filter.id);
+        runFilter();
     };
 
     function elementHasPerspective(element) {
@@ -1459,8 +1455,7 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
 
     this.setFilter = function(f) {
         filter = f;
-        filter.id++;
-        runFilter(filter.id);
+        runFilter();
     }
 
     this.getFilter = function() {
@@ -1469,8 +1464,7 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
 
     this.filterOff = function() {
         filter.active = false;
-        filter.id++;
-        runFilter(filter.id);
+        runFilter();
     }
 
     function elementMatchesFilter(element) {
@@ -1505,11 +1499,7 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
         }
     }
 
-    function runFilter(filterId) {
-        if (filterId !== filter.id) {
-            return;
-        }
-
+    function runFilter() {
         var itemsHidden = false;
         const hiddenOpacity = '0.1';
 
@@ -1604,12 +1594,12 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
             showBoundaries();
         }
 
-        if (refresh && filterId === filter.id) {
+        if (refresh) {
             const viewOrFilter = (currentFilter !== undefined ? currentFilter : currentView);
             const interval = getViewOrViewSetProperty(viewOrFilter, 'structurizr.perspective.interval', '60000');
 
             setTimeout(function () {
-                runFilter(filterId);
+                runFilter();
             }, interval);
         }
     }
@@ -5237,35 +5227,37 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
         $(".structurizrNavigation").attr('display', 'block');
         $(".structurizrMetadata>tspan").attr('display', 'block');
 
-        var contentArea;
-        if (crop === true) {
-            contentArea = findContentArea(true, 50);
-        } else {
-            contentArea = {
-                minX: 0,
-                minY: 0,
-                maxX: diagramWidth,
-                maxY: diagramHeight
+        if (crop) {
+            var contentArea;
+            if (crop === true) {
+                contentArea = findContentArea(true, 50);
+            } else {
+                contentArea = {
+                    minX: 0,
+                    minY: 0,
+                    maxX: diagramWidth,
+                    maxY: diagramHeight
+                }
             }
+
+            width = contentArea.maxX - contentArea.minX;
+            height = contentArea.maxY - contentArea.minY;
+
+            const viewbox = ' viewBox="' + contentArea.minX + " " + contentArea.minY + " " + width + " " + height + '"';
+            const svgOpeningTag = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="' + width +'" height="' + height + '" style="width: ' + width + 'px; height: ' + height + 'px; background: ' + canvasColor + '"' + viewbox + '>';
+
+            // replace opening tag with dimensions (some browsers seem to require this)
+            svgMarkup = svgOpeningTag + svgMarkup.substring(svgMarkup.indexOf('>') + 1, svgMarkup.length);
+
+            // this hides the handles used to change vertices
+            svgMarkup = svgMarkup.replace(/class="marker-vertices"/g, 'class="marker-vertices" display="none"');
+
+            // and remove the &nbsp; added by JointJS (otherwise you get a blank PNG file)
+            svgMarkup = svgMarkup.replace(/&nbsp;/g, ' ');
+
+            // remove any control characters (these shouldn't be there anyway, but...)
+            svgMarkup = svgMarkup.replace(/[\x00-\x19]+/g, "");
         }
-
-        width = contentArea.maxX - contentArea.minX;
-        height = contentArea.maxY - contentArea.minY;
-
-        const viewbox = ' viewBox="' + contentArea.minX + " " + contentArea.minY + " " + width + " " + height + '"';
-        const svgOpeningTag = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="' + width +'" height="' + height + '" style="width: ' + width + 'px; height: ' + height + 'px; background: ' + canvasColor + '"' + viewbox + '>';
-
-        // replace opening tag with dimensions (some browsers seem to require this)
-        svgMarkup = svgOpeningTag + svgMarkup.substring(svgMarkup.indexOf('>') + 1, svgMarkup.length);
-
-        // this hides the handles used to change vertices
-        svgMarkup = svgMarkup.replace(/class="marker-vertices"/g, 'class="marker-vertices" display="none"');
-
-        // and remove the &nbsp; added by JointJS (otherwise you get a blank PNG file)
-        svgMarkup = svgMarkup.replace(/&nbsp;/g, ' ');
-
-        // remove any control characters (these shouldn't be there anyway, but...)
-        svgMarkup = svgMarkup.replace(/[\x00-\x19]+/g, "");
 
         const result = {
             markup: svgMarkup,
@@ -5358,109 +5350,6 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
             });
         } catch (err) {
             console.log(err);
-        }
-    };
-
-    this.exportViews = function(viewsToExport, options, viewCallback, finishedCallback) {
-        const format = options.format;
-        const includeDiagramAnimations = options.animation;
-
-        const colorScheme = structurizr.ui.isDarkMode() ? '-dark' : '';
-        structurizr.diagram.onViewChanged(undefined);
-
-        if (viewsToExport && viewsToExport.length > 0) {
-            const viewToExport = structurizr.workspace.findViewByKey(viewsToExport[0]);
-
-            structurizr.diagram.changeView(viewToExport.key, function () {
-                if (includeDiagramAnimations === true && !structurizr.diagram.currentViewIsImage() && structurizr.diagram.currentViewHasAnimation()) {
-                    structurizr.diagram.exportCurrentDiagramKey(options, function(diagramKeyContent) {
-
-                        var stepNumber = 1;
-                        structurizr.diagram.startAnimation(false);
-
-                        const f = function () {
-                            structurizr.diagram.exportCurrentDiagram(options, function(diagramContent) {
-
-                                var paddedStepNumber = ("00" + stepNumber);
-                                paddedStepNumber = paddedStepNumber.substr(paddedStepNumber.length-3);
-
-                                const diagramFilename = options.prefix + viewToExport.key + colorScheme + '-' + paddedStepNumber + '.' + format;
-
-                                if (format === 'svg') {
-                                    diagramContent = 'data:image/svg+xml;base64,' + structurizr.util.btoa(diagramContent);
-                                }
-
-                                viewCallback(
-                                    viewToExport,
-                                    { filename: diagramFilename, content: diagramContent },
-                                    undefined
-                                );
-
-                                structurizr.diagram.stepForwardInAnimation();
-                                stepNumber++;
-
-                                if (structurizr.diagram.animationStarted() === false) {
-                                    structurizr.diagram.exportCurrentDiagram(options, function(diagramContent) {
-                                        var paddedStepNumber = ("00" + stepNumber);
-                                        paddedStepNumber = paddedStepNumber.substr(paddedStepNumber.length-3);
-
-                                        const diagramFilename = options.prefix + viewToExport.key + colorScheme + '-' + paddedStepNumber + '.' + format;
-                                        const diagramKeyFilename = options.prefix + viewToExport.key + colorScheme + '-key.' + format;
-
-                                        if (format === 'svg') {
-                                            diagramContent = 'data:image/svg+xml;base64,' + structurizr.util.btoa(diagramContent);
-                                            if (diagramKeyContent !== undefined) {
-                                                diagramKeyContent = 'data:image/svg+xml;base64,' + structurizr.util.btoa(diagramKeyContent);
-                                            }
-                                        }
-
-                                        viewCallback(
-                                            viewToExport,
-                                            { filename: diagramFilename, content: diagramContent },
-                                            { filename: diagramKeyFilename, content: diagramKeyContent }
-                                        );
-
-                                        viewsToExport.splice(0, 1);
-                                        structurizr.diagram.exportViews(viewsToExport, options, viewCallback, finishedCallback);
-                                    });
-                                } else {
-                                    f();
-                                }
-                            });
-                        }
-
-                        f();
-                    });
-                } else {
-                    structurizr.diagram.exportCurrentDiagram(options, function(diagramContent) {
-                        structurizr.diagram.exportCurrentDiagramKey(options, function(diagramKeyContent) {
-                            const diagramFileName = options.prefix + viewToExport.key + colorScheme + '.' + format;
-                            const diagramKeyFilename = options.prefix + viewToExport.key + colorScheme + '-key.' + format;
-
-                            if (format === 'svg') {
-                                diagramContent = 'data:image/svg+xml;base64,' + structurizr.util.btoa(diagramContent);
-                                if (diagramKeyContent !== undefined) {
-                                    diagramKeyContent = 'data:image/svg+xml;base64,' + structurizr.util.btoa(diagramKeyContent);
-                                }
-                            }
-
-                            viewCallback(
-                                viewToExport,
-                                { filename: diagramFileName, content: diagramContent },
-                                { filename: diagramKeyFilename, content: diagramKeyContent }
-                            );
-
-                            viewsToExport.splice(0, 1);
-                            structurizr.diagram.exportViews(viewsToExport, options, viewCallback, finishedCallback);
-                        });
-                    });
-                }
-            });
-        } else {
-            setTimeout(function() {
-                structurizr.diagram.onViewChanged(viewChanged);
-                finishedCallback();
-            }, 1000);
         }
     };
 
@@ -5969,7 +5858,7 @@ structurizr.ui.Diagram = function(id, diagramIsEditable, constructionCompleteCal
         hideAllLines('1.0');
         hideAllElements('1.0');
         unfadeAllElements();
-        runFilter(filter.id);
+        runFilter();
 
         if (this.currentViewIsDynamic()) {
             linesToAnimate = undefined;

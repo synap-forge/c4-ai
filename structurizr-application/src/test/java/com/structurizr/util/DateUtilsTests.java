@@ -8,11 +8,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class DateUtilsTests {
 
@@ -68,7 +67,7 @@ public class DateUtilsTests {
     @Test
     void test_getDate() {
         Date date = DateUtils.getDate(2013, 7, 1, 17, 30, 00);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss:SSS", Locale.ENGLISH);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss:SSS");
         sdf.setTimeZone(TimeZone.getTimeZone(DateUtils.UTC_TIME_ZONE));
         assertEquals("01-Jul-2013 17:30:00:000", sdf.format(date));
     }

@@ -1,8 +1,8 @@
 package com.structurizr.server.web.workspace.images;
 
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 
-public class ImagesControllerTests extends AbstractTestsBase {
+public class ImagesControllerTests extends ControllerTestsBase {
 
 //    private ImagesController controller;
 //    private ModelMap model;

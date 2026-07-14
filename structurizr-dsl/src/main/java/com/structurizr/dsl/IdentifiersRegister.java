@@ -114,10 +114,10 @@ public class IdentifiersRegister {
         Element e = getElement(identifier);
         Relationship r = getRelationship(identifier);
 
-        if (e == null && r == null) {
+        if ((e == null && r == null) || (e == element)) {
             elementsByIdentifier.put(identifier, element);
         } else {
-            throw new RuntimeException("The identifier \"" + identifier.toLowerCase() + "\" is already in use");
+            throw new RuntimeException("The identifier \"" + identifier + "\" is already in use");
         }
     }
 
@@ -168,10 +168,10 @@ public class IdentifiersRegister {
         Element e = getElement(identifier);
         Relationship r = getRelationship(identifier);
 
-        if (e == null && r == null) {
+        if ((e == null && r == null) || (r == relationship)) {
             relationshipsByIdentifier.put(identifier, relationship);
         } else {
-            throw new RuntimeException("The identifier \"" + identifier.toLowerCase() + "\" is already in use");
+            throw new RuntimeException("The identifier \"" + identifier + "\" is already in use");
         }
     }
 

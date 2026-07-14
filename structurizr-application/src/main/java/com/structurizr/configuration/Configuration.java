@@ -26,7 +26,7 @@ public class Configuration {
     private static final String TRUE = "true";
     private static final String FALSE = "false";
 
-    public static final String DEFAULT_STRUCTURIZR_DATA_DIRECTORY = "/usr/local/structurizr";
+    public static final String DEFAULT_STRUCTURIZR_DATA_DIRECTORY = "/Users/anasiri2/structurizr";
     private static final String WORK_DIRECTORY_NAME = ".structurizr";
 
     private static final String PROPERTY_NAME_PREFIX = "structurizr.";
@@ -62,49 +62,27 @@ public class Configuration {
             setAdminUsersAndRoles(getProperty(ADMIN_USERS_AND_ROLES).split(COMMA));
         }
 
-        if (profile == Profile.Local || profile == Profile.Server) {
-            if (!getDataDirectory().exists()) {
-                boolean result = getDataDirectory().mkdirs();
-                if (!result) {
-                    log.fatal("Could not create data directory at " + getDataDirectory().getAbsolutePath());
-                    System.exit(1);
-                }
-            } else if (!getDataDirectory().isDirectory()) {
-                log.fatal("Data directory " + getDataDirectory().getAbsolutePath() + " is not a directory");
-                System.exit(1);
+        if (!getDataDirectory().exists()) {
+            boolean result = getDataDirectory().mkdirs();
+            if (!result) {
+                log.fatal("Could not create data directory at " + getDataDirectory().getAbsolutePath());
             }
+        }
 
-            if (!getDataDirectory().canWrite()) {
-                log.fatal("Data directory " + getDataDirectory().getAbsolutePath() + " is not writable");
-                System.exit(1);
-            }
-
-            if (!getWorkDirectory().exists()) {
-                boolean result = getWorkDirectory().mkdirs();
-                if (!result) {
-                    log.fatal("Could not create work directory at " + getWorkDirectory().getAbsolutePath());
-                    System.exit(1);
-                }
+        if (!getWorkDirectory().exists()) {
+            boolean result = getWorkDirectory().mkdirs();
+            if (!result) {
+                log.fatal("Could not create work directory at " + getWorkDirectory().getAbsolutePath());
             }
         }
 
         configureLogging();
     }
 
-    public static void initPlayground(Properties properties) {
-        Configuration.init(Profile.Playground, properties);
-    }
-
-    public static void initLocal(Properties properties) {
-        Configuration.init(Profile.Local, properties);
-    }
-
-    public static void initServer(Properties properties) {
-        Configuration.init(Profile.Server, properties);
-    }
-
-    private static void init(Profile profile, Properties properties) {
+    public static Configuration init(Profile profile, Properties properties) {
         INSTANCE = new Configuration(profile, properties);
+
+        return INSTANCE;
     }
 
     public static Configuration getInstance() {
@@ -270,14 +248,13 @@ public class Configuration {
         setDefault(DEBUG, FALSE);
         setDefault(NETWORK_TIMEOUT, DEFAULT_NETWORK_TIMEOUT_OF_SIXTY_SECONDS);
         setDefault(THEMES, getDataDirectory().getAbsolutePath() + File.separator + DEFAULT_THEMES_PATH + File.separator);
-        setDefault(MAX_WORKSPACE_SIZE, DEFAULT_MAX_WORKSPACE_SIZE);
 
         if (profile != Profile.Playground) {
             setDefault(AUTHENTICATION_IMPLEMENTATION, AUTHENTICATION_VARIANT_NONE);
             setDefault(DATA_STORAGE_IMPLEMENTATION, DATA_STORAGE_VARIANT_FILE);
             setDefault(SEARCH_IMPLEMENTATION, SEARCH_VARIANT_LUCENE);
             setDefault(CACHE_IMPLEMENTATION, CACHE_VARIANT_NONE);
-            setDefault(WORKSPACE_THREADS, DEFAULT_WORKSPACE_THREADS);
+            setDefault(WORKSPACE_THREADS, DEFAULT_NUMBER_OF_THREADS);
         }
 
         if (profile == Profile.Local) {
@@ -398,7 +375,7 @@ public class Configuration {
         log.info(" ____) | |_| |  | |_| | (__| |_| |_| | |  | |/ /| |   ");
         log.info("|_____/ \\__|_|   \\__,_|\\___|\\__|\\__,_|_|  |_/___|_|   ");
         log.info("                                                      ");
-        log.info(getProfile() + " v" + new Version().getBuildNumber());
+        log.info("v" + new Version().getBuildNumber());
 
         logAllProperties(log, getProperties());
         log.info("***********************************************************************************");
@@ -408,6 +385,16 @@ public class Configuration {
             log.info(" - " + theme);
         }
         log.info("***********************************************************************************");
+
+        if (!getDataDirectory().exists()) {
+            log.fatal("Data directory " + getDataDirectory().getAbsolutePath() + " does not exist");
+        } else if (!getDataDirectory().isDirectory()) {
+            log.fatal("Data directory " + getDataDirectory().getAbsolutePath() + " is not a directory");
+        } else {
+            if (!getDataDirectory().canWrite()) {
+                log.fatal("Data directory " + getDataDirectory().getAbsolutePath() + " is not writable");
+            }
+        }
     }
 
     private void logAllProperties(Log log, Properties properties) {

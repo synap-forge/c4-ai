@@ -71,7 +71,8 @@ class SoftwareSystemInstanceParserTests extends AbstractTests {
         assertSame(softwareSystem, softwareSystemInstance.getSoftwareSystem());
         assertEquals("Software System Instance", softwareSystemInstance.getTags());
         assertEquals("Live", softwareSystemInstance.getEnvironment());
-        assertEquals(0, softwareSystemInstance.getDeploymentGroups().size());
+        assertEquals(1, softwareSystemInstance.getDeploymentGroups().size());
+        assertEquals("Default", softwareSystemInstance.getDeploymentGroups().iterator().next());
     }
 
     @Test
@@ -91,7 +92,8 @@ class SoftwareSystemInstanceParserTests extends AbstractTests {
         assertSame(softwareSystem, softwareSystemInstance.getSoftwareSystem());
         assertEquals("Software System Instance,Tag 1,Tag 2", softwareSystemInstance.getTags());
         assertEquals("Live", softwareSystemInstance.getEnvironment());
-        assertEquals(0, softwareSystemInstance.getDeploymentGroups().size());
+        assertEquals(1, softwareSystemInstance.getDeploymentGroups().size());
+        assertEquals("Default", softwareSystemInstance.getDeploymentGroups().iterator().next());
     }
 
     @Test

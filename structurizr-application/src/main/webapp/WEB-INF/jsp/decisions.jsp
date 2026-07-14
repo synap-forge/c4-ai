@@ -2,8 +2,7 @@
 
 <script type="text/javascript" src="<c:url value="/static/js/structurizr-embed.js" />"></script>
 <script type="text/javascript" src="<c:url value="/static/js/structurizr-content.js" />"></script>
-<script type="text/javascript" src="/static/js/markdown-it-14.1.1.min.js"></script>
-<script text="text/javascript" src="/static/js/markdown-it-footnote-4.0.0.min.js"></script>
+<script type="text/javascript" src="/static/js/markdown-it-13.0.1.min.js"></script>
 <script type="text/javascript" src="/static/js/katex-0.16.27.min.js"></script>
 <script type="text/javascript" src="/static/js/asciidoctor-2.2.6.min.js"></script>
 
@@ -116,7 +115,6 @@
                 structurizr.workspace,
                 '/static',
                 '<c:out value="${urlPrefix}" />',
-                '${workspace.branch}',
                 ${structurizrConfiguration.safeMode});
 
             initDecisionScopeAndOrder();
@@ -530,6 +528,8 @@
         const contentHeight = (window.innerHeight - topNavigationHeight - padding);
         $('#documentationPanel').css('height', contentHeight + 'px');
         documentationNavigationPanel.css('height', contentHeight + 'px');
+
+        $('.img-thumbnail').css('max-height', 0.8 * contentHeight);
 
         if (graph !== undefined && $('#graphContent').is(':visible')) {
             resizeGraph();

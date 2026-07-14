@@ -8,7 +8,7 @@ import com.structurizr.model.SoftwareSystemInstance;
 import java.util.HashSet;
 import java.util.Set;
 
-final class SoftwareSystemInstanceParser extends DeploymentElementParser {
+final class SoftwareSystemInstanceParser extends StaticStructureInstanceParser {
 
     private static final String GRAMMAR = "softwareSystemInstance <identifier> [deploymentGroups] [tags]";
 

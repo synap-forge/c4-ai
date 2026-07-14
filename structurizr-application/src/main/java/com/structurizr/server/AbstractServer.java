@@ -10,10 +10,11 @@ import org.apache.tomcat.util.descriptor.web.JspPropertyGroup;
 import org.apache.tomcat.util.descriptor.web.JspPropertyGroupDescriptorImpl;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.session.data.redis.autoconfigure.SessionDataRedisAutoConfiguration;
+import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -25,7 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
-@EnableAutoConfiguration(exclude = { SessionAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = { SessionAutoConfiguration.class, SessionDataRedisAutoConfiguration.class })
 @ComponentScan(basePackages = "com.structurizr.server")
 @SpringBootConfiguration
 @EnableScheduling
@@ -57,28 +58,25 @@ public abstract class AbstractServer extends SpringBootServletInitializer {
 
 	@Bean
 	public ConfigurableServletWebServerFactory configurableServletWebServerFactory ( ) {
-		return new TomcatServletWebServerFactory() {
-			@Override
-			protected void postProcessContext(Context context) {
-				super.postProcessContext(context);
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+		factory.addContextCustomizers(context -> {
+			JspPropertyGroup jspPropertyGroup = new JspPropertyGroup();
+			jspPropertyGroup.addUrlPattern("*.jsp");
+			jspPropertyGroup.setPageEncoding("UTF-8");
+			jspPropertyGroup.setScriptingInvalid("true");
+			jspPropertyGroup.addIncludePrelude("/WEB-INF/fragments/prelude.jspf");
+			jspPropertyGroup.addIncludeCoda("/WEB-INF/fragments/coda.jspf");
+			jspPropertyGroup.setTrimWhitespace("true");
+			jspPropertyGroup.setDefaultContentType("text/html");
 
-				JspPropertyGroup jspPropertyGroup = new JspPropertyGroup();
-				jspPropertyGroup.addUrlPattern("*.jsp");
-				jspPropertyGroup.setPageEncoding("UTF-8");
-				jspPropertyGroup.setScriptingInvalid("true");
-				jspPropertyGroup.addIncludePrelude("/WEB-INF/fragments/prelude.jspf");
-				jspPropertyGroup.addIncludeCoda("/WEB-INF/fragments/coda.jspf");
-				jspPropertyGroup.setTrimWhitespace("true");
-				jspPropertyGroup.setDefaultContentType("text/html");
-
-				context.setJspConfigDescriptor(
-						new JspConfigDescriptorImpl(
-								List.of(new JspPropertyGroupDescriptorImpl(jspPropertyGroup)),
-								Collections.emptyList()
-						)
-				);
-			}
-		};
+			context.setJspConfigDescriptor(
+					new JspConfigDescriptorImpl(
+							List.of(new JspPropertyGroupDescriptorImpl(jspPropertyGroup)),
+							Collections.emptyList()
+					)
+			);
+		});
+		return factory;
 	}
 
 	@PreDestroy

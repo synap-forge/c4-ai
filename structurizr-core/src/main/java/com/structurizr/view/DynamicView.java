@@ -220,7 +220,7 @@ public final class DynamicView extends ModelView {
                 }
             }
 
-            if (relationship != null && isRelationshipInView(relationship)) {
+            if (relationship != null) {
                 addElement(source, false);
                 addElement(destination, false);
 

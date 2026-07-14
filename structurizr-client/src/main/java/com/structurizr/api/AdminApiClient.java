@@ -4,11 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hc.client5.http.classic.methods.*;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -23,6 +19,8 @@ public class AdminApiClient extends AbstractApiClient {
 
     private static final Log log = LogFactory.getLog(AdminApiClient.class);
 
+    private final String apiKey;
+
     /**
      * Creates a new admin API client.
      *
@@ -30,7 +28,9 @@ public class AdminApiClient extends AbstractApiClient {
      * @param apiKey    the admin API key
      */
     public AdminApiClient(String url, String apiKey) {
-        super(url, apiKey);
+        super(url);
+
+        this.apiKey = apiKey;
     }
 
     /**
@@ -40,36 +40,27 @@ public class AdminApiClient extends AbstractApiClient {
      * @throws StructurizrClientException   if an error occurs
      */
     public List<WorkspaceMetadata> getWorkspaces() throws StructurizrClientException {
-        try (CloseableHttpClient httpClient = HttpClients.createSystem()) {
-            log.debug("Getting workspaces");
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url + WORKSPACE_PATH))
+                    .header(HttpHeaders.X_AUTHORIZATION, createAuthorizationHeader())
+                    .header(HttpHeaders.USER_AGENT, agent)
+                    .build();
+            HttpClient client = HttpClient.newHttpClient();
 
-            HttpUriRequestBase httpRequest;
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-            httpRequest = new HttpGet(url + WORKSPACE_PATH);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String json = response.body();
 
-            addHeaders(httpRequest, "");
-            debugRequest(httpRequest, null);
-
-            HttpClientResult result = httpClient.execute(httpRequest, response -> {
-                String json = EntityUtils.toString(response.getEntity());
-                debugResponse(response, json);
-
-                return new HttpClientResult(response.getCode() == HttpStatus.SC_OK, json);
-            });
-
-            checkResponseIsJson(result.getContent());
-
-            if (result.isSuccess()) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-                Workspaces workspaces = objectMapper.readValue(result.getContent(), Workspaces.class);
+            if (response.statusCode() == HttpStatus.SC_OK) {
+                Workspaces workspaces = objectMapper.readValue(response.body(), Workspaces.class);
                 return workspaces.getWorkspaces();
             } else {
-                ApiResponse apiResponse = ApiResponse.parse(result.getContent());
+                ApiResponse apiResponse = ApiResponse.parse(json);
                 throw new StructurizrClientException(apiResponse.getMessage());
             }
-
         } catch (Exception e) {
             log.error(e);
             throw new StructurizrClientException(e);
@@ -83,29 +74,25 @@ public class AdminApiClient extends AbstractApiClient {
      * @throws StructurizrClientException   if an error occurs
      */
     public WorkspaceMetadata createWorkspace() throws StructurizrClientException {
-        try (CloseableHttpClient httpClient = HttpClients.createSystem()) {
-            log.debug("Creating workspace");
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url + WORKSPACE_PATH))
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .header(HttpHeaders.X_AUTHORIZATION, createAuthorizationHeader())
+                    .header(HttpHeaders.USER_AGENT, agent)
+                    .build();
+            HttpClient client = HttpClient.newHttpClient();
 
-            HttpUriRequestBase httpRequest = new HttpPost(url + WORKSPACE_PATH);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-            addHeaders(httpRequest, "");
-            debugRequest(httpRequest, null);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String json = response.body();
 
-            HttpClientResult result = httpClient.execute(httpRequest, response -> {
-                String json = EntityUtils.toString(response.getEntity());
-                debugResponse(response, json);
-
-                return new HttpClientResult(response.getCode() == HttpStatus.SC_OK, json);
-            });
-
-            checkResponseIsJson(result.getContent());
-            ApiResponse apiResponse = ApiResponse.parse(result.getContent());
-
-            if (result.isSuccess()) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                return objectMapper.readValue(result.getContent(), WorkspaceMetadata.class);
+            if (response.statusCode() == HttpStatus.SC_OK) {
+                return objectMapper.readValue(json, WorkspaceMetadata.class);
             } else {
+                ApiResponse apiResponse = ApiResponse.parse(json);
                 throw new StructurizrClientException(apiResponse.getMessage());
             }
         } catch (Exception e) {
@@ -118,37 +105,39 @@ public class AdminApiClient extends AbstractApiClient {
      * Deletes a workspace.
      *
      * @param workspaceId       the ID of the workspace to delete
-     * @return  true if successful, false otherwise
      * @throws StructurizrClientException   if an error occurs
      */
-    public boolean deleteWorkspace(long workspaceId) throws StructurizrClientException {
-        try (CloseableHttpClient httpClient = HttpClients.createSystem()) {
-            log.debug("Deleting workspace " + workspaceId);
+    public void deleteWorkspace(int workspaceId) throws StructurizrClientException {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url + WORKSPACE_PATH + "/" + workspaceId))
+                    .DELETE()
+                    .header(HttpHeaders.X_AUTHORIZATION, createAuthorizationHeader())
+                    .header(HttpHeaders.USER_AGENT, agent)
+                    .build();
+            HttpClient client = HttpClient.newHttpClient();
 
-            HttpUriRequestBase httpRequest = new HttpDelete(url + WORKSPACE_PATH + "/" + workspaceId);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-            addHeaders(httpRequest, "");
-            debugRequest(httpRequest, null);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String json = response.body();
 
-            HttpClientResult result = httpClient.execute(httpRequest, response -> {
-                String json = EntityUtils.toString(response.getEntity());
-                debugResponse(response, json);
-
-                return new HttpClientResult(response.getCode() == HttpStatus.SC_OK, json);
-            });
-
-            checkResponseIsJson(result.getContent());
-            ApiResponse apiResponse = ApiResponse.parse(result.getContent());
-
-            if (result.isSuccess()) {
-                return apiResponse.isSuccess();
+            if (response.statusCode() == HttpStatus.SC_OK) {
+                ApiResponse apiResponse = ApiResponse.parse(json);
+                log.debug(apiResponse.getMessage());
             } else {
+                ApiResponse apiResponse = ApiResponse.parse(json);
                 throw new StructurizrClientException(apiResponse.getMessage());
             }
         } catch (Exception e) {
             log.error(e);
             throw new StructurizrClientException(e);
         }
+    }
+
+    private String createAuthorizationHeader() {
+        return apiKey != null ? apiKey : "";
     }
 
 }

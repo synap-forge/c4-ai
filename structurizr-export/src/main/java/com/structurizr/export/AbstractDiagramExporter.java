@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractDiagramExporter extends AbstractExporter implements DiagramExporter {
 
+    protected static final String GROUP_SEPARATOR_PROPERTY_NAME = "structurizr.groupSeparator";
+
     protected final ColorScheme colorScheme;
 
     private Object frame = null;
@@ -513,7 +515,7 @@ public abstract class AbstractDiagramExporter extends AbstractExporter implement
     }
 
     protected List<String> findGroups(ModelView view, List<GroupableElement> elements) {
-        String groupSeparator = view.getModel().getProperties().get(Model.GROUP_SEPARATOR_PROPERTY_NAME);
+        String groupSeparator = view.getModel().getProperties().get(GROUP_SEPARATOR_PROPERTY_NAME);
         boolean nested = !StringUtils.isNullOrEmpty(groupSeparator);
 
         elements.sort(Comparator.comparing(Element::getId));
@@ -541,7 +543,7 @@ public abstract class AbstractDiagramExporter extends AbstractExporter implement
     }
 
     protected void writeElements(ModelView view, List<GroupableElement> elements, IndentingWriter writer) {
-        String groupSeparator = view.getModel().getProperties().get(Model.GROUP_SEPARATOR_PROPERTY_NAME);
+        String groupSeparator = view.getModel().getProperties().get(GROUP_SEPARATOR_PROPERTY_NAME);
         boolean nested = !StringUtils.isNullOrEmpty(groupSeparator);
         List<String> groupsAsList = findGroups(view, elements);
 

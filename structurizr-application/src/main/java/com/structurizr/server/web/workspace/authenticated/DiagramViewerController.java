@@ -42,12 +42,6 @@ class DiagramViewerController extends AbstractWorkspaceController {
                         Set<Permission> permissions = workspaceMetadata.getPermissions(getUser());
                         model.addAttribute("includeEditButton", permissions.contains(Permission.Write));
                     }
-
-                    if (Configuration.getInstance().getProfile() == Profile.Local) {
-                        model.addAttribute("publishImages", false);
-                    } else {
-                        model.addAttribute("publishImages", !workspaceMetadata.isClientEncrypted());
-                    }
                 },
                 branch, version, model, false, false
         );

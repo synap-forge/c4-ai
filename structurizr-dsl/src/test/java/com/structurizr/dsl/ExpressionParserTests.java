@@ -596,7 +596,7 @@ class ExpressionParserTests extends AbstractTests {
 
         assertEquals(2, model.getRelationships().size());
 
-        DeploymentEnvironmentDslContext context = new DeploymentEnvironmentDslContext(DeploymentNode.DEFAULT_DEPLOYMENT_ENVIRONMENT);
+        DeploymentEnvironmentDslContext context = new DeploymentEnvironmentDslContext(DeploymentNode.DEFAULT_DEPLOYMENT_GROUP);
         context.setWorkspace(workspace);
 
         IdentifiersRegister map = new IdentifiersRegister();

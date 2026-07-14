@@ -3,7 +3,7 @@ package com.structurizr.server.web.workspace.authenticated;
 import com.structurizr.configuration.StructurizrProperties;
 import com.structurizr.server.component.workspace.WorkspaceComponentException;
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DiagramEditorControllerTests extends AbstractTestsBase {
+public class DiagramEditorControllerTests extends ControllerTestsBase {
 
     private DiagramEditorController controller;
     private ModelMap model;
@@ -26,7 +26,7 @@ public class DiagramEditorControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDiagramEditor_ReturnsThe404Page_WhenTheWorkspaceDoesNotExist() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
             @Override
@@ -42,7 +42,7 @@ public class DiagramEditorControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDiagramEditor_ReturnsThe404Page_WhenTheUserDoesNotHaveAccess() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         workspaceMetaData.addWriteUser("user2@example.com");
@@ -79,7 +79,7 @@ public class DiagramEditorControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDiagramEditor_ReturnsTheDiagramEditorPage_WhenAuthenticationIsDisabled()  {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
@@ -112,13 +112,11 @@ public class DiagramEditorControllerTests extends AbstractTestsBase {
         assertEquals("1234567890", workspaceMetaData.getLockedUser());
         assertTrue(workspaceMetaData.getLockedAgent().startsWith("structurizr/diagrams/"));
         assertEquals(true, model.getAttribute("retainWorkspaceLock"));
-        assertEquals(false, model.get("publishThumbnails"));
-        assertEquals(false, model.get("publishImages"));
     }
 
     @Test
     void showAuthenticatedDiagramEditor_ReturnsTheDiagramEditorPage_WhenTheWorkspaceHasNoUsersConfigured()  {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
@@ -151,13 +149,11 @@ public class DiagramEditorControllerTests extends AbstractTestsBase {
         assertEquals("user@example.com", workspaceMetaData.getLockedUser());
         assertTrue(workspaceMetaData.getLockedAgent().startsWith("structurizr/diagrams/"));
         assertEquals(true, model.getAttribute("retainWorkspaceLock"));
-        assertEquals(false, model.get("publishThumbnails"));
-        assertEquals(false, model.get("publishImages"));
     }
 
     @Test
     void showAuthenticatedDiagramEditor_ReturnsTheDiagramEditorPage_WhenTheUserHasWriteAccess()  {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         workspaceMetaData.addWriteUser("user1@example.com");
@@ -192,13 +188,11 @@ public class DiagramEditorControllerTests extends AbstractTestsBase {
         assertEquals("user1@example.com", workspaceMetaData.getLockedUser());
         assertTrue(workspaceMetaData.getLockedAgent().startsWith("structurizr/diagrams/"));
         assertEquals(true, model.getAttribute("retainWorkspaceLock"));
-        assertEquals(false, model.get("publishThumbnails"));
-        assertEquals(false, model.get("publishImages"));
     }
 
     @Test
     void showAuthenticatedDiagramEditor_ReturnsAnErrorPage_WhenTheUserHasReadAccess()  {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         workspaceMetaData.addReadUser("user1@example.com");

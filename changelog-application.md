@@ -4,6 +4,7 @@
 
 - Updates Structurizr for Java library to [v6.2.0](https://github.com/structurizr/structurizr/releases/tag/v6.2.0).
 - There are now two versions of the prebuilt binaries - see [Prebuilt binaries](https://docs.structurizr.com/binaries) for details. 
+- Fixes https://github.com/structurizr/structurizr/issues/22 (Diagram-as-text plugin rendering (Mermaid) for Markdown docs not compatible for Windows line endings).
 
 ### local
 

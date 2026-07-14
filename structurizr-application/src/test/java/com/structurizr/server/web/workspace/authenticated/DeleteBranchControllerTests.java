@@ -3,7 +3,7 @@ package com.structurizr.server.web.workspace.authenticated;
 import com.structurizr.configuration.Configuration;
 import com.structurizr.configuration.Features;
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import org.springframework.ui.ModelMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DeleteBranchControllerTests extends AbstractTestsBase {
+public class DeleteBranchControllerTests extends ControllerTestsBase {
 
     private DeleteBranchController controller;
     private ModelMap model;
@@ -24,7 +24,7 @@ public class DeleteBranchControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteBranch_ReturnsThe404Page_WhenTheWorkspaceBranchesAreNotEnabled() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
         Configuration.getInstance().setFeatureDisabled(Features.WORKSPACE_BRANCHES);
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {});
@@ -35,7 +35,7 @@ public class DeleteBranchControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteBranch_ReturnsThe404Page_WhenTryingToDeleteTheMainBranch() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.WORKSPACE_BRANCHES);
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {});
@@ -49,7 +49,7 @@ public class DeleteBranchControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteBranch_ReturnsThe404Page_WhenTheWorkspaceDoesNotExist() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.WORKSPACE_BRANCHES);
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
@@ -65,7 +65,7 @@ public class DeleteBranchControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteBranch_DeletesTheBranch_WhenAuthenticationIsDisabled() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.WORKSPACE_BRANCHES);
 
         final StringBuilder buf = new StringBuilder();
@@ -89,7 +89,7 @@ public class DeleteBranchControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteBranch_DeletesTheBranch_WhenAuthenticationIsEnabledAndNoUsersAreConfigured() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.WORKSPACE_BRANCHES);
         setUser("user@example.com");
 
@@ -114,7 +114,7 @@ public class DeleteBranchControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteBranch_DeletesTheBranch_WhenAuthenticationIsEnabledAndTheUserHasWriteAccess() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.WORKSPACE_BRANCHES);
         setUser("user@example.com");
 
@@ -142,7 +142,7 @@ public class DeleteBranchControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteBranch_ReturnsThe404Page_WhenAuthenticationIsEnabledAndTheUserHasReadAccess() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.WORKSPACE_BRANCHES);
         setUser("user@example.com");
 
@@ -170,7 +170,7 @@ public class DeleteBranchControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteBranch_ReturnsThe404Page_WhenAuthenticationIsEnabledAndTheUserDoesNotHaveAccess() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         Configuration.getInstance().setFeatureEnabled(Features.WORKSPACE_BRANCHES);
         setUser("user2@example.com");
 

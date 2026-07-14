@@ -1817,24 +1817,11 @@ workspace {
         assertTrue(apiInstance2.hasEfferentRelationshipWith(dbInstance2));
         assertTrue(apiInstance2.hasEfferentRelationshipWith(dbInstance1));
 
-        server1 = workspace.getModel().getDeploymentNodeWithName("Server 1", "WithSpecifiedDeploymentGroups");
+        server1 = workspace.getModel().getDeploymentNodeWithName("Server 1", "WithDeploymentGroups");
         apiInstance1 = server1.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(api)).findFirst().get();
         dbInstance1 = server1.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(db)).findFirst().get();
 
-        server2 = workspace.getModel().getDeploymentNodeWithName("Server 2", "WithSpecifiedDeploymentGroups");
-        apiInstance2 = server2.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(api)).findFirst().get();
-        dbInstance2 = server2.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(db)).findFirst().get();
-
-        assertTrue(apiInstance1.hasEfferentRelationshipWith(dbInstance1));
-        assertFalse(apiInstance1.hasEfferentRelationshipWith(dbInstance2));
-        assertTrue(apiInstance2.hasEfferentRelationshipWith(dbInstance2));
-        assertFalse(apiInstance2.hasEfferentRelationshipWith(dbInstance1));
-
-        server1 = workspace.getModel().getDeploymentNodeWithName("Server 1", "WithInheritedDeploymentGroups");
-        apiInstance1 = server1.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(api)).findFirst().get();
-        dbInstance1 = server1.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(db)).findFirst().get();
-
-        server2 = workspace.getModel().getDeploymentNodeWithName("Server 2", "WithInheritedDeploymentGroups");
+        server2 = workspace.getModel().getDeploymentNodeWithName("Server 2", "WithDeploymentGroups");
         apiInstance2 = server2.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(api)).findFirst().get();
         dbInstance2 = server2.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(db)).findFirst().get();
 
@@ -1867,24 +1854,11 @@ workspace {
         assertTrue(apiInstance2.hasEfferentRelationshipWith(dbInstance2));
         assertTrue(apiInstance2.hasEfferentRelationshipWith(dbInstance1));
 
-        server1 = workspace.getModel().getDeploymentNodeWithName("Server 1", "WithSpecifiedDeploymentGroups");
+        server1 = workspace.getModel().getDeploymentNodeWithName("Server 1", "WithDeploymentGroups");
         apiInstance1 = server1.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(api)).findFirst().get();
         dbInstance1 = server1.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(db)).findFirst().get();
 
-        server2 = workspace.getModel().getDeploymentNodeWithName("Server 2", "WithSpecifiedDeploymentGroups");
-        apiInstance2 = server2.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(api)).findFirst().get();
-        dbInstance2 = server2.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(db)).findFirst().get();
-
-        assertTrue(apiInstance1.hasEfferentRelationshipWith(dbInstance1));
-        assertFalse(apiInstance1.hasEfferentRelationshipWith(dbInstance2));
-        assertTrue(apiInstance2.hasEfferentRelationshipWith(dbInstance2));
-        assertFalse(apiInstance2.hasEfferentRelationshipWith(dbInstance1));
-
-        server1 = workspace.getModel().getDeploymentNodeWithName("Server 1", "WithInheritedDeploymentGroups");
-        apiInstance1 = server1.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(api)).findFirst().get();
-        dbInstance1 = server1.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(db)).findFirst().get();
-
-        server2 = workspace.getModel().getDeploymentNodeWithName("Server 2", "WithInheritedDeploymentGroups");
+        server2 = workspace.getModel().getDeploymentNodeWithName("Server 2", "WithDeploymentGroups");
         apiInstance2 = server2.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(api)).findFirst().get();
         dbInstance2 = server2.getContainerInstances().stream().filter(ci -> ci.getContainer().equals(db)).findFirst().get();
 

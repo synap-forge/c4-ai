@@ -86,13 +86,11 @@ public class AdrToolsDecisionImporter extends AbstractDecisionImporter {
                 Map<String,Decision> decisionsByFilename = new HashMap<>();
 
                 for (File file : markdownFiles) {
-                    if (!excluded(file)){
-                        Decision decision = importDecision(file);
-                        documentable.getDocumentation().addDecision(decision);
+                    Decision decision = importDecision(file);
+                    documentable.getDocumentation().addDecision(decision);
 
-                        decisionsById.put(decision.getId(), decision);
-                        decisionsByFilename.put(file.getName(), decision);
-                    }
+                    decisionsById.put(decision.getId(), decision);
+                    decisionsByFilename.put(file.getName(), decision);
                 }
 
                 for (Decision decision : decisionsById.values()) {

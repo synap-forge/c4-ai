@@ -2,7 +2,7 @@ package com.structurizr.server.web.workspace.authenticated;
 
 import com.structurizr.server.component.workspace.WorkspaceComponentException;
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockHttpServletResponse;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class JsonControllerTests extends AbstractTestsBase {
+public class JsonControllerTests extends ControllerTestsBase {
 
     private JsonController controller;
     private MockHttpServletResponse response;
@@ -24,7 +24,7 @@ public class JsonControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedJson_ReturnsA404_WhenTheWorkspaceDoesNotExist() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
             @Override
@@ -40,7 +40,7 @@ public class JsonControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedJson_ReturnsTheJson_WhenAuthenticationIsDisabled() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
 
@@ -62,7 +62,7 @@ public class JsonControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedJson_ReturnsTheJson_WhenAuthenticationIsEnabledAndTheUserHasAccess() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         setUser("user1@example.com");
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
@@ -86,7 +86,7 @@ public class JsonControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedJson_ReturnsA404_WhenAuthenticationIsEnabledAndTheUserDoesNotHaveAccess() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         setUser("user2@example.com");
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);

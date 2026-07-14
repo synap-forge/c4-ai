@@ -3,7 +3,7 @@ package com.structurizr.server.web.workspace.authenticated;
 import com.structurizr.configuration.StructurizrProperties;
 import com.structurizr.server.component.workspace.WorkspaceComponentException;
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockSearchComponent;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,7 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class DeleteWorkspaceControllerTests extends AbstractTestsBase {
+public class DeleteWorkspaceControllerTests extends ControllerTestsBase {
 
     private DeleteWorkspaceController controller;
     private ModelMap model;
@@ -28,7 +28,7 @@ public class DeleteWorkspaceControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteWorkspace_ReturnsThe404Page_WhenTheWorkspaceDoesNotExist() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
             @Override
@@ -43,7 +43,7 @@ public class DeleteWorkspaceControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteWorkspace_DeletesTheWorkspace_WhenAuthenticationIsDisabled() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
         setUser("user@example.com");
 
         final StringBuilder buf = new StringBuilder();
@@ -74,7 +74,7 @@ public class DeleteWorkspaceControllerTests extends AbstractTestsBase {
 
     @Test
     void deleteWorkspace_DeletesTheWorkspace_WhenAuthenticationIsEnabledAndNoUsersAreConfigured() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         setUser("user@example.com");
 
         final StringBuilder buf = new StringBuilder();
@@ -106,7 +106,7 @@ public class DeleteWorkspaceControllerTests extends AbstractTestsBase {
     @Test
     void deleteWorkspace_DeletesTheWorkspace_WhenAuthenticationIsEnabledAndTheUserIsAWriteUser() {
         Properties properties = new Properties();
-        configureAsServerWithAuthenticationEnabled(properties);
+        enableAuthentication(properties);
         setUser("write@example.com");
 
         final StringBuilder buf = new StringBuilder();
@@ -141,7 +141,7 @@ public class DeleteWorkspaceControllerTests extends AbstractTestsBase {
     void deleteWorkspace_DeletesTheWorkspace_WhenAuthenticationIsEnabledAndTheUserIsAnAdmin() {
         Properties properties = new Properties();
         properties.setProperty(StructurizrProperties.ADMIN_USERS_AND_ROLES, "admin@example.com");
-        configureAsServerWithAuthenticationEnabled(properties);
+        enableAuthentication(properties);
         setUser("admin@example.com");
 
         final StringBuilder buf = new StringBuilder();
@@ -176,7 +176,7 @@ public class DeleteWorkspaceControllerTests extends AbstractTestsBase {
     void deleteWorkspace_RedirectsToTheWorkspaceSummaryPage_WhenAuthenticationIsEnabledAndTheUserIsNotAnAdmin() {
         Properties properties = new Properties();
         properties.setProperty(StructurizrProperties.ADMIN_USERS_AND_ROLES, "admin@example.com");
-        configureAsServerWithAuthenticationEnabled(properties);
+        enableAuthentication(properties);
         setUser("write@example.com");
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
@@ -201,7 +201,7 @@ public class DeleteWorkspaceControllerTests extends AbstractTestsBase {
     @Test
     void deleteWorkspace_RedirectsToTheWorkspaceSummaryPage_WhenAuthenticationIsEnabledAndTheUserIsNotAWriteUser() {
         Properties properties = new Properties();
-        configureAsServerWithAuthenticationEnabled(properties);
+        enableAuthentication(properties);
         setUser("read@example.com");
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {

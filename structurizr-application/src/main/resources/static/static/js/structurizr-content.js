@@ -1,7 +1,7 @@
 // this code renders the following items in Markdown/AsciiDoc documentation:
 // - images that are embedded in the workspace (as base64 data uris)
 // - diagrams from the workspace (as iframe embeds)
-structurizr.ui.ContentRenderer = function(workspace, host, urlPrefix, branch, safeMode) {
+structurizr.ui.ContentRenderer = function(workspace, host, urlPrefix, safeMode) {
 
     const MAX_HEIGHT_PERCENTAGE = 0.6;
     var images = workspace.documentation.images;
@@ -10,8 +10,6 @@ structurizr.ui.ContentRenderer = function(workspace, host, urlPrefix, branch, sa
     var md = window.markdownit({
         html: !safeMode
     });
-
-    md.use(window.markdownitFootnote);
 
     md.renderer.rules.image = function(tokens, idx, options, env, self) {
         var token = tokens[idx];
@@ -146,15 +144,10 @@ structurizr.ui.ContentRenderer = function(workspace, host, urlPrefix, branch, sa
             imageTitle = '<div class="imageTitle">' + alt + '</div>';
         }
 
-        // check for images of the form {workspace}/images
+        // check for images of the form {workspace}/images (this is only supported by Lite)
         const workspacePrefix = '%7Bworkspace%7D/images/';
         if (name.indexOf(workspacePrefix) === 0) {
-            if (branch && branch.length > 0) {
-                name = urlPrefix + '/branch/' + branch + '/images/' + name.substr(workspacePrefix.length);
-            } else {
-                name = urlPrefix + '/images/' + name.substr(workspacePrefix.length);
-            }
-
+            name = urlPrefix + '/images/' + name.substr(workspacePrefix.length);
             return renderImageFromFile(name, alt, imageTitle);
         }
 

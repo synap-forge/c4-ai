@@ -30,7 +30,7 @@
                         Download
                     </label>
 
-                    <c:if test="${publishImages}">
+                    <c:if test="${embed ne true && fn:startsWith(urlPrefix, '/workspace') && not workspace.clientEncrypted && structurizrConfiguration.profile ne 'Playground'}">
                     <label style="margin-right: 20px">
                         <input type="checkbox" id="exportPublish" checked="checked" class="form-check-input" />
                         Publish
@@ -118,9 +118,6 @@
         </c:if>
     }
 
-    var downloadImages = false;
-    var publishImages = false;
-
     function exportSelectedViews(format) {
         $('#exportedDiagrams').empty();
 
@@ -134,28 +131,133 @@
                 $('#exportAnimation').addClass('hidden');
             }
 
-            publishImages = ${publishImages} && $('#exportPublish').is(':checked') === true;
-            downloadImages = $('#exportDownload').is(':checked') === true;
-
-            const originalView = structurizr.diagram.getCurrentViewOrFilter();
-            structurizr.diagram.exportViews(
+            exportDiagrams(
                 selectedValues,
                 {
                     format: format,
                     metadata: $('#exportMetadata').is(':checked') === true,
-                    animation: $('#exportAnimationSteps').is(':checked') === true,
+                    animations: $('#exportAnimationSteps').is(':checked') === true,
                     crop: $('#exportCrop').is(':checked') === true,
-                    prefix: $('#exportFilenamePrefix').val()
+                    download: $('#exportDownload').is(':checked') === true,
+                    prefix: $('#exportFilenamePrefix').val(),
+                    publish: $('#exportPublish').is(':checked') === true
                 },
-                addDiagramExportToPage,
-                function() {
-                    changeView(originalView);
-                }
-            );
+                structurizr.diagram.getCurrentViewOrFilter());
         }
     }
 
-    function addDiagramExportToPage(view, diagram, diagramKey, download) {
+    function exportDiagrams(viewsToExport, options, originalView) {
+        const format = options.format;
+        const includeDiagramAnimations = options.animations;
+        const download = options.download;
+        const publish = options.publish;
+
+        const colorScheme = structurizr.ui.isDarkMode() ? '-dark' : '';
+        structurizr.diagram.onViewChanged(undefined);
+
+        if (viewsToExport && viewsToExport.length > 0) {
+            const viewToExport = structurizr.workspace.findViewByKey(viewsToExport[0]);
+
+            changeView(viewToExport, function () {
+                if (includeDiagramAnimations === true && !structurizr.diagram.currentViewIsImage() && structurizr.diagram.currentViewHasAnimation()) {
+                    structurizr.diagram.exportCurrentDiagramKey(options, function(diagramKeyExport) {
+
+                        var stepNumber = 1;
+                        structurizr.diagram.startAnimation(false);
+
+                        const f = function () {
+                            structurizr.diagram.exportCurrentDiagram(options, function(diagramExport) {
+
+                                var paddedStepNumber = ("00" + stepNumber);
+                                paddedStepNumber = paddedStepNumber.substr(paddedStepNumber.length-3);
+
+                                const diagramFilename = options.prefix + viewToExport.key + colorScheme + '-' + paddedStepNumber + '.' + format;
+
+                                if (format === 'svg') {
+                                    diagramExport = 'data:image/svg+xml;base64,' + structurizr.util.btoa(diagramExport);
+                                }
+
+                                addDiagramExportToPage(viewToExport, diagramExport, diagramFilename, undefined, undefined, download);
+
+                                if (publish) {
+                                    publishImage(diagramFilename, diagramExport);
+                                }
+
+                                structurizr.diagram.stepForwardInAnimation();
+                                stepNumber++;
+
+                                if (structurizr.diagram.animationStarted() === false) {
+                                    structurizr.diagram.exportCurrentDiagram(options, function(diagramExport) {
+                                        var paddedStepNumber = ("00" + stepNumber);
+                                        paddedStepNumber = paddedStepNumber.substr(paddedStepNumber.length-3);
+
+                                        const diagramFilename = options.prefix + viewToExport.key + colorScheme + '-' + paddedStepNumber + '.' + format;
+                                        const diagramKeyFilename = options.prefix + viewToExport.key + colorScheme + '-key.' + format;
+
+                                        if (format === 'svg') {
+                                            diagramExport = 'data:image/svg+xml;base64,' + structurizr.util.btoa(diagramExport);
+                                            if (diagramKeyExport !== undefined) {
+                                                diagramKeyExport = 'data:image/svg+xml;base64,' + structurizr.util.btoa(diagramKeyExport);
+                                            }
+                                        }
+
+                                        addDiagramExportToPage(viewToExport, diagramExport, diagramFilename, diagramKeyExport, diagramKeyFilename, download);
+
+                                        if (publish) {
+                                            publishImage(diagramFilename, diagramExport);
+                                            publishImage(diagramKeyFilename, diagramKeyExport);
+                                        }
+
+                                        viewsToExport.splice(0, 1);
+                                        exportDiagrams(viewsToExport, options, originalView);
+                                    });
+                                } else {
+                                    f();
+                                }
+                            });
+                        }
+
+                        f();
+                    });
+                } else {
+                    structurizr.diagram.exportCurrentDiagram(options, function(diagramExport) {
+                        structurizr.diagram.exportCurrentDiagramKey(options, function(diagramKeyExport) {
+                            const diagramFileName = options.prefix + viewToExport.key + colorScheme + '.' + format;
+                            const diagramKeyFilename = options.prefix + viewToExport.key + colorScheme + '-key.' + format;
+
+                            if (format === 'svg') {
+                                diagramExport = 'data:image/svg+xml;base64,' + structurizr.util.btoa(diagramExport);
+                                if (diagramKeyExport !== undefined) {
+                                    diagramKeyExport = 'data:image/svg+xml;base64,' + structurizr.util.btoa(diagramKeyExport);
+                                }
+                            }
+
+                            addDiagramExportToPage(viewToExport, diagramExport, diagramFileName, diagramKeyExport, diagramKeyFilename, download);
+
+                            if (publish) {
+                                publishImage(diagramFileName, diagramExport);
+
+                                if (diagramKeyExport !== undefined) {
+                                    // image view
+                                    publishImage(diagramKeyFilename, diagramKeyExport);
+                                }
+                            }
+
+                            viewsToExport.splice(0, 1);
+                            exportDiagrams(viewsToExport, options, originalView);
+                        });
+                    });
+                }
+            });
+        } else {
+            setTimeout(function() {
+                structurizr.diagram.onViewChanged(viewChanged);
+                changeView(originalView);
+            }, 1000);
+        }
+    }
+
+    function addDiagramExportToPage(view, diagramExport, diagramFilename, diagramKeyExport, diagramKeyFilename, download) {
         const viewTitle = structurizr.ui.getTitleForView(view);
 
         const exportedImageElement = document.getElementById("exportedDiagrams");
@@ -169,53 +271,45 @@
         div.appendChild(title);
 
         var filename = document.createElement('div');
-        filename.appendChild(document.createTextNode(diagram.filename));
+        filename.appendChild(document.createTextNode(diagramFilename));
         filename.style = "font-size: 8px; margin-bottom: 10px";
 
         var link = document.createElement("a");
+        link.download = diagramFilename;
+
         const img = document.createElement('img');
-        img.className = "img-thumbnail img-" + diagram.filename.substring(diagram.filename.lastIndexOf('.')+1);
+        img.className = "img-thumbnail img-" + diagramFilename.substring(diagramFilename.lastIndexOf('.')+1);
         img.style = "display: block; margin: 0 auto 5px auto; width: 200px;";
 
-        link.download = diagram.filename;
-        img.src = diagram.content;
-        link.href = URL.createObjectURL(structurizr.util.dataURIToBlob(diagram.content));
+        img.src = diagramExport;
+        link.href = URL.createObjectURL(structurizr.util.dataURIToBlob(diagramExport));
 
         link.appendChild(img);
         div.appendChild(link);
         div.appendChild(filename);
 
-        if (publishImages) {
-            publishImage(diagram.filename, diagram.content);
-        }
-
-        if (downloadImages) {
+        if (download) {
             link.click();
         }
 
-        if (diagramKey !== undefined && diagramKey.content !== undefined) {
+        if (diagramKeyExport !== undefined) {
             var imgKey = document.createElement('img');
             imgKey.className = "img-thumbnail";
             imgKey.style = "display: block; margin: 0 auto 5px auto; width: 200px;";
-
             var linkKey = document.createElement("a");
             linkKey.appendChild(imgKey);
             div.appendChild(linkKey);
 
             filename = document.createElement('div');
-            filename.appendChild(document.createTextNode(diagramKey.filename));
+            filename.appendChild(document.createTextNode(diagramKeyFilename));
             filename.style = "font-size: 8px; margin-bottom: 10px";
             div.appendChild(filename);
 
-            linkKey.download = diagramKey.filename;
-            imgKey.src = diagramKey.content;
-            linkKey.href = URL.createObjectURL(structurizr.util.dataURIToBlob(diagramKey.content));
+            imgKey.src = diagramKeyExport;
+            linkKey.download = diagramKeyFilename;
+            linkKey.href = URL.createObjectURL(structurizr.util.dataURIToBlob(diagramKeyExport));
 
-            if (publishImages) {
-                publishImage(diagramKey.filename, diagramKey.content);
-            }
-
-            if (downloadImages) {
+            if (download) {
                 linkKey.click();
             }
         }

@@ -21,7 +21,7 @@ workspace {
             }
         }
 
-        deploymentEnvironment "WithSpecifiedDeploymentGroups" {
+        deploymentEnvironment "WithDeploymentGroups" {
             serviceInstance1 = deploymentGroup "Service Instance 1"
             serviceInstance2 = deploymentGroup "Service Instance 2"
             deploymentNode "Server 1" {
@@ -34,7 +34,7 @@ workspace {
             }
         }
 
-        deploymentEnvironment "WithSpecifiedDeploymentGroupsAgain" {
+        deploymentEnvironment "WithDeploymentGroupsAgain" {
             serviceInstance1 = deploymentGroup "Service Instance 1"
             serviceInstance2 = deploymentGroup "Service Instance 2"
             deploymentNode "Server 1" {
@@ -44,21 +44,6 @@ workspace {
             deploymentNode "Server 2" {
                 containerInstance softwareSystem.api serviceInstance2
                 containerInstance softwareSystem.database serviceInstance2
-            }
-        }
-
-        deploymentEnvironment "WithInheritedDeploymentGroups" {
-            serviceInstance1 = deploymentGroup "Service Instance 1"
-            serviceInstance2 = deploymentGroup "Service Instance 2"
-            deploymentNode "Server 1" {
-                deploymentGroup serviceInstance1
-                containerInstance softwareSystem.api
-                containerInstance softwareSystem.database
-            }
-            deploymentNode "Server 2" {
-                deploymentGroup serviceInstance2
-                containerInstance softwareSystem.api
-                containerInstance softwareSystem.database
             }
         }
     }

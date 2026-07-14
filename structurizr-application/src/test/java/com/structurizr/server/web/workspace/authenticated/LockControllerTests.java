@@ -1,7 +1,7 @@
 package com.structurizr.server.web.workspace.authenticated;
 
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ import org.springframework.ui.ModelMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class LockControllerTests extends AbstractTestsBase {
+public class LockControllerTests extends ControllerTestsBase {
 
     private LockController controller;
     private ModelMap model;
@@ -18,7 +18,7 @@ public class LockControllerTests extends AbstractTestsBase {
     public void setUp() {
         controller = new LockController();
         model = new ModelMap();
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
     }
 
     @Test

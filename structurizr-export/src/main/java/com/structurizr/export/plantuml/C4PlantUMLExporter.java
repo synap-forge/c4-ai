@@ -76,7 +76,7 @@ public class C4PlantUMLExporter extends AbstractPlantUMLExporter {
             }
         }
 
-        writeSkinParams(view, writer);
+        writeSkinParams(writer);
 
         writer.writeLine("<style>");
         writer.indent();
@@ -284,7 +284,7 @@ public class C4PlantUMLExporter extends AbstractPlantUMLExporter {
         groupId++;
         String groupName = group;
 
-        String groupSeparator = view.getModel().getProperties().get(Model.GROUP_SEPARATOR_PROPERTY_NAME);
+        String groupSeparator = view.getModel().getProperties().get(GROUP_SEPARATOR_PROPERTY_NAME);
         if (!StringUtils.isNullOrEmpty(groupSeparator)) {
             groupName = group.substring(group.lastIndexOf(groupSeparator) + groupSeparator.length());
         }
@@ -425,12 +425,35 @@ public class C4PlantUMLExporter extends AbstractPlantUMLExporter {
     }
 
     @Override
-    protected void startBoundary(DynamicView view, Element element, IndentingWriter writer) {
-        writer.writeLine(String.format("box \"%s\n<size:%s>%s</size>\"",
-                element.getName(),
-                "12",
-                typeOf(view, element, true)));
-        writer.indent();
+    public Diagram export(DynamicView view, String order) {
+        if (renderAsSequenceDiagram(view)) {
+            IndentingWriter writer = new IndentingWriter();
+            writeHeader(view, writer);
+
+            boolean elementsWritten = false;
+
+            Set<Element> elements = new LinkedHashSet<>();
+            for (RelationshipView relationshipView : view.getRelationships()) {
+                elements.add(relationshipView.getRelationship().getSource());
+                elements.add(relationshipView.getRelationship().getDestination());
+            }
+
+            for (Element element : elements) {
+                writeElement(view, element, writer);
+                elementsWritten = true;
+            }
+
+            if (elementsWritten) {
+                writer.writeLine();
+            }
+
+            writeRelationships(view, writer);
+            writeFooter(view, writer);
+
+            return createDiagram(view, writer.toString());
+        } else {
+            return super.export(view, order);
+        }
     }
 
     @Override
@@ -641,6 +664,10 @@ public class C4PlantUMLExporter extends AbstractPlantUMLExporter {
 
     protected boolean usePlantUMLStandardLibrary(ModelView view) {
         return "true".equalsIgnoreCase(getViewOrViewSetProperty(view, C4PLANTUML_STANDARD_LIBRARY_PROPERTY, "true"));
+    }
+
+    protected boolean renderAsSequenceDiagram(ModelView view) {
+        return view instanceof DynamicView && "true".equalsIgnoreCase(getViewOrViewSetProperty(view, PLANTUML_SEQUENCE_DIAGRAM_PROPERTY, "false"));
     }
 
 }

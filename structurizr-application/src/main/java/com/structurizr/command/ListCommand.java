@@ -80,7 +80,7 @@ public class ListCommand extends AbstractCommand {
             buf.append("  ");
         }
 
-        System.out.println(buf + " - " + modelItem.getCanonicalName());
+        log.info(buf.toString() + " - " + modelItem.getCanonicalName());
     }
 
 }

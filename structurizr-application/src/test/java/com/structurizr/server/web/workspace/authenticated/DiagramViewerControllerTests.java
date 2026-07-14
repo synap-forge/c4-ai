@@ -3,7 +3,7 @@ package com.structurizr.server.web.workspace.authenticated;
 import com.structurizr.configuration.StructurizrProperties;
 import com.structurizr.server.component.workspace.WorkspaceComponentException;
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class DiagramViewerControllerTests extends AbstractTestsBase {
+public class DiagramViewerControllerTests extends ControllerTestsBase {
 
     private DiagramViewerController controller;
     private ModelMap model;
@@ -27,7 +27,7 @@ public class DiagramViewerControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDiagramViewer_ReturnsTheDiagramViewerPageWhenAuthenticationIsDisabled()  {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
@@ -49,13 +49,11 @@ public class DiagramViewerControllerTests extends AbstractTestsBase {
         assertEquals("/workspace/1", model.getAttribute("urlPrefix"));
         assertEquals("/workspace/1/images/", model.getAttribute("thumbnailUrl"));
         assertEquals(true, model.getAttribute("includeEditButton"));
-        assertEquals(false, model.get("publishThumbnails"));
-        assertEquals(true, model.get("publishImages"));
     }
 
     @Test
     void showAuthenticatedDiagramViewer_ReturnsTheDiagramViewerPage_WhenAuthenticationIsEnabledAndTheWorkspaceHasNoUsersConfigured()  {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
@@ -78,13 +76,11 @@ public class DiagramViewerControllerTests extends AbstractTestsBase {
         assertEquals("/workspace/1", model.getAttribute("urlPrefix"));
         assertEquals("/workspace/1/images/", model.getAttribute("thumbnailUrl"));
         assertEquals(true, model.getAttribute("includeEditButton"));
-        assertEquals(false, model.get("publishThumbnails"));
-        assertEquals(true, model.get("publishImages"));
     }
 
     @Test
     void showAuthenticatedDiagramViewer_ReturnsTheDiagramViewerPage_WhenAuthenticationIsEnabledTheUserHasWriteAccess()  {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         workspaceMetaData.addWriteUser("user1@example.com");
@@ -109,13 +105,11 @@ public class DiagramViewerControllerTests extends AbstractTestsBase {
         assertEquals("/workspace/1", model.getAttribute("urlPrefix"));
         assertEquals("/workspace/1/images/", model.getAttribute("thumbnailUrl"));
         assertEquals(true, model.getAttribute("includeEditButton"));
-        assertEquals(false, model.get("publishThumbnails"));
-        assertEquals(true, model.get("publishImages"));
     }
 
     @Test
     public void showAuthenticatedDiagramViewer_ReturnsTheDiagramViewerPage_WhenAuthenticationIsEnabledAndTheUserHasReadAccess()  {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
         workspaceMetaData.addReadUser("user1@example.com");
@@ -140,8 +134,6 @@ public class DiagramViewerControllerTests extends AbstractTestsBase {
         assertEquals("/workspace/1", model.getAttribute("urlPrefix"));
         assertEquals("/workspace/1/images/", model.getAttribute("thumbnailUrl"));
         assertEquals(false, model.getAttribute("includeEditButton"));
-        assertEquals(false, model.get("publishThumbnails"));
-        assertEquals(true, model.get("publishImages"));
     }
 
     @Test
@@ -176,9 +168,6 @@ public class DiagramViewerControllerTests extends AbstractTestsBase {
 
         assertEquals(12345, model.getAttribute("autoRefreshInterval"));
         assertEquals(1234567890L, model.getAttribute("autoRefreshLastModifiedDate"));
-
-        assertEquals(false, model.get("publishThumbnails"));
-        assertEquals(false, model.get("publishImages"));
     }
 
     @Test
@@ -215,9 +204,6 @@ public class DiagramViewerControllerTests extends AbstractTestsBase {
 
         assertEquals(12345, model.getAttribute("autoRefreshInterval"));
         assertEquals(1234567890L, model.getAttribute("autoRefreshLastModifiedDate"));
-
-        assertEquals(false, model.get("publishThumbnails"));
-        assertEquals(false, model.get("publishImages"));
     }
 
 }

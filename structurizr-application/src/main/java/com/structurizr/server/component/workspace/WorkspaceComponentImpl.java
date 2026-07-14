@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -54,15 +53,15 @@ class WorkspaceComponentImpl implements WorkspaceComponent {
             } else {
                 workspaceAdapter = new LocalFileSystemMultipleWorkspaceAdapter();
             }
-            encryptionPassphrase = null;
         } else {
             workspaceAdapter = WorkspaceAdapterFactory.create();
-            encryptionPassphrase = Configuration.getInstance().getProperty(StructurizrProperties.ENCRYPTION_PASSPHRASE);
         }
 
         if (workspaceAdapter == null) {
             System.exit(1);
         }
+
+        encryptionPassphrase = Configuration.getInstance().getProperty(StructurizrProperties.ENCRYPTION_PASSPHRASE);
 
         initCache();
         initThreadPool();
@@ -307,7 +306,6 @@ class WorkspaceComponentImpl implements WorkspaceComponent {
     @Override
     public void putWorkspace(long workspaceId, String branch, String json) {
         WorkspaceBranch.validateBranchName(branch);
-        validateWorkspaceSize(workspaceId, json);
 
         try {
             AbstractWorkspace workspaceToBeStored;
@@ -430,16 +428,8 @@ class WorkspaceComponentImpl implements WorkspaceComponent {
         } catch (WorkspaceComponentException wce) {
             throw wce;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new WorkspaceComponentException(e.getMessage(), e);
-        }
-    }
-
-    private void validateWorkspaceSize(long workspaceId, String json) {
-        int maxWorkspaceSizeInBytes = SizeUtils.parse(Configuration.getInstance().getProperty(StructurizrProperties.MAX_WORKSPACE_SIZE));
-
-        long sizeInBytes = json.getBytes(StandardCharsets.UTF_8).length;
-        if (sizeInBytes > maxWorkspaceSizeInBytes) {
-            throw new WorkspaceTooLargeException(workspaceId, sizeInBytes, maxWorkspaceSizeInBytes);
         }
     }
 
@@ -556,13 +546,13 @@ class WorkspaceComponentImpl implements WorkspaceComponent {
     }
 
     @Override
-    public List<Image> getImages(long workspaceId, String branch) {
-        return workspaceAdapter.getImages(workspaceId, branch);
+    public List<Image> getImages(long workspaceId) {
+        return workspaceAdapter.getImages(workspaceId);
     }
 
     @Override
-    public boolean deleteImages(long workspaceId, String branch) {
-        return workspaceAdapter.deleteImages(workspaceId, branch);
+    public boolean deleteImages(long workspaceId) {
+        return workspaceAdapter.deleteImages(workspaceId);
     }
 
     @Override

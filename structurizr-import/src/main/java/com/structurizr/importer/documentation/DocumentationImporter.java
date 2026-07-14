@@ -17,7 +17,4 @@ public interface DocumentationImporter {
      */
     void importDocumentation(Documentable documentable, File path);
 
-    default void exclude(String regex) {
-    }
-
 }

@@ -1,19 +1,55 @@
 # Structurizr
 
-Structurizr is a "models as code" tool designed for the [C4 model](https://c4model.com) - you write [Structurizr DSL](https://docs.structurizr.com/dsl) to create multiple software architecture diagrams from a single model. Structurizr was created by [the author of the C4 model](https://simonbrown.je) and remains the reference implementation, making it the best choice if you are looking for compliance and compatibility with the C4 model.
+This repo represents the consolidated version of all Structurizr tooling.
 
-- [Structurizr DSL - Example](https://docs.structurizr.com/dsl/example)
-- [Structurizr DSL - Tutorial](https://docs.structurizr.com/dsl/tutorial)
+- [Introducing Structurizr vNext](https://www.patreon.com/posts/146923136)
+- [Building from source](https://docs.structurizr.com/building)
+- [Binaries](https://docs.structurizr.com/binaries)
+- [Commands](https://docs.structurizr.com/commands)
 
-## Quickstart
 
-The two quickest ways to get started with the Structurizr tooling are:
 
-1. Visit [playground.structurizr.com](https://playground.structurizr.com) to try Structurizr without installing any tooling.
-2. Use Structurizr [local](https://docs.structurizr.com/local) via the pre-built Docker image to create diagrams on your computer - see [local - Quickstart](https://docs.structurizr.com/local/quickstart).
 
-[![Structurizr playground](https://docs.structurizr.com/images/playground.png)](https://playground.structurizr.com)
+java -jar -Dserver.port=9090 -Dstructurizr.themes=/Users/anasiri2/Developments/appsrc/open-sources/structurizr/structurizr-themes/ structurizr-application/target/structurizr-1.0.0.war playground
 
-## Documentation
 
-See [docs.structurizr.com](https://docs.structurizr.com) for documentation, getting started guides, tutorials, etc.
+java -jar structurizr-application/target/structurizr-1.0.0.war push -url http://localhost:8080/api -id 2 -workspace /Users/anasiri2/Developments/appsrc/lululemon/retail-services-architecture-resources/Discount/ai.dsl
+
+
+java -jar -Dstructurizr.themes=/Users/anasiri2/Developments/appsrc/open-sources/structurizr/structurizr-themes/ structurizr-application/target/structurizr-1.0.0.war server 
+
+
+java -jar structurizr-application/target/structurizr-1.0.0.war local 
+
+ java -jar structurizr-application/target/structurizr-1.0.0.war server --enable-native-access=ALL-UNNAMED
+
+
+ java -jar structurizr-application/target/structurizr-1.0.0.war branches 
+
+
+java -jar -Dstructurizr.themes=/Users/anasiri2/Developments/appsrc/open-sources/structurizr/structurizr-themes/ structurizr-application/target/structurizr-1.0.0.war push -url http://localhost:8080/api -id 3 -workspace /Users/anasiri2/Developments/appsrc/lululemon/retail-services-architecture-resources/giftcard-webhook/workspace.dsl
+
+
+java -jar structurizr-application/target/structurizr-1.0.0.war export \
+  -w workspace.dsl \
+  -f plantuml \
+  -o ./diagrams
+
+
+java -jar structurizr-application/target/structurizr-1.0.0.war export \
+  -w workspace.dsl \
+  -f static \
+  -o ./diagrams
+
+
+Available formats:
+
+Flag	Output
+plantuml	PlantUML (Structurizr dialect)
+plantuml/c4plantuml	C4-PlantUML
+mermaid	Mermaid diagrams
+websequencediagrams	WebSequenceDiagrams
+json	Workspace JSON
+theme	Theme JSON
+static	Static HTML site
+

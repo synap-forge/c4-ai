@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -177,10 +176,6 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
      * Trims the workspace by removing all unused elements.
      */
     public void trim() {
-        for (Relationship relationship : model.getRelationships()) {
-            remove(relationship);
-        }
-
         for (CustomElement element : model.getCustomElements()) {
             remove(element);
         }
@@ -199,7 +194,7 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
     }
 
     void remove(CustomElement element) {
-        if (!element.hasRelationships() && !isElementAssociatedWithAnyViews(element)) {
+        if (!isElementAssociatedWithAnyViews(element)) {
             try {
                 Method method = Model.class.getDeclaredMethod("remove", CustomElement.class);
                 method.setAccessible(true);
@@ -211,7 +206,7 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
     }
 
     void remove(Person person) {
-        if (!person.hasRelationships() && !isElementAssociatedWithAnyViews(person)) {
+        if (!isElementAssociatedWithAnyViews(person)) {
             try {
                 Method method = Model.class.getDeclaredMethod("remove", Person.class);
                 method.setAccessible(true);
@@ -234,7 +229,7 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
 
         boolean hasContainers = softwareSystem.hasContainers();
         boolean hasSoftwareSystemInstances = model.getElements().stream().anyMatch(e -> e instanceof SoftwareSystemInstance && ((SoftwareSystemInstance)e).getSoftwareSystem() == softwareSystem);
-        if (!hasContainers && !hasSoftwareSystemInstances && !softwareSystem.hasRelationships() && !isElementAssociatedWithAnyViews(softwareSystem)) {
+        if (!hasContainers && !hasSoftwareSystemInstances && !isElementAssociatedWithAnyViews(softwareSystem)) {
             try {
                 Method method = Model.class.getDeclaredMethod("remove", SoftwareSystem.class);
                 method.setAccessible(true);
@@ -258,7 +253,7 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
 
             boolean hasComponents = container.hasComponents();
             boolean hasContainerInstances = model.getElements().stream().anyMatch(e -> e instanceof ContainerInstance && ((ContainerInstance)e).getContainer() == container);
-            if (!hasComponents && !hasContainerInstances && !container.hasRelationships() && !isElementAssociatedWithAnyViews(container)) {
+            if (!hasComponents && !hasContainerInstances && !isElementAssociatedWithAnyViews(container)) {
                 try {
                     Method method = Model.class.getDeclaredMethod("remove", Container.class);
                     method.setAccessible(true);
@@ -271,7 +266,7 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
     }
 
     void remove(Component component) {
-        if (!component.hasRelationships() && !isElementAssociatedWithAnyViews(component)) {
+        if (!isElementAssociatedWithAnyViews(component)) {
             try {
                 Method method = Model.class.getDeclaredMethod("remove", Component.class);
                 method.setAccessible(true);
@@ -283,7 +278,7 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
     }
 
     void remove(SoftwareSystemInstance softwareSystemInstance) {
-        if (!softwareSystemInstance.hasRelationships() && !isElementAssociatedWithAnyViews(softwareSystemInstance)) {
+        if (!isElementAssociatedWithAnyViews(softwareSystemInstance)) {
             try {
                 Method method = Model.class.getDeclaredMethod("remove", SoftwareSystemInstance.class);
                 method.setAccessible(true);
@@ -295,23 +290,11 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
     }
 
     void remove(ContainerInstance containerInstance) {
-        if (!containerInstance.hasRelationships() && !isElementAssociatedWithAnyViews(containerInstance)) {
+        if (!isElementAssociatedWithAnyViews(containerInstance)) {
             try {
                 Method method = Model.class.getDeclaredMethod("remove", ContainerInstance.class);
                 method.setAccessible(true);
                 method.invoke(model, containerInstance);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    void remove(InfrastructureNode infrastructureNode) {
-        if (!infrastructureNode.hasRelationships() && !isElementAssociatedWithAnyViews(infrastructureNode)) {
-            try {
-                Method method = Model.class.getDeclaredMethod("remove", InfrastructureNode.class);
-                method.setAccessible(true);
-                method.invoke(model, infrastructureNode);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -325,11 +308,7 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
             }
         }
 
-        for (InfrastructureNode infrastructureNode : deploymentNode.getInfrastructureNodes()) {
-            remove(infrastructureNode);
-        }
-
-        if (!deploymentNode.hasChildren() && !deploymentNode.hasSoftwareSystemInstances() && !deploymentNode.hasContainerInstances() && !deploymentNode.hasInfrastructureNodes() && !deploymentNode.hasRelationships()) {
+        if (!deploymentNode.hasChildren() && !deploymentNode.hasSoftwareSystemInstances() && !deploymentNode.hasContainerInstances()) {
             try {
                 Method method = Model.class.getDeclaredMethod("remove", DeploymentNode.class);
                 method.setAccessible(true);
@@ -345,37 +324,29 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
      *
      * @param relationship      the Relationship to remove
      */
-    public boolean remove(Relationship relationship) {
+    public void remove(Relationship relationship) {
         if (relationship == null) {
             throw new IllegalArgumentException("A relationship must be specified.");
         }
 
-        // 1. find all relationships where the specified relationship is the linked relationship - these need to be removed first
-        Set<Relationship> linkedRelationships = getModel().getRelationships().stream().filter(r -> relationship.getId().equals(r.getLinkedRelationshipId())).collect(Collectors.toSet());
-        boolean linkedRelationshipsRemoved = true;
-
-        for (Relationship linkedRelationship : linkedRelationships) {
-            linkedRelationshipsRemoved = (linkedRelationshipsRemoved && remove(linkedRelationship));
-        }
-
-        // 2. remove the relationship itself
-        if (linkedRelationshipsRemoved) {
-            if (!isRelationshipAssociatedWithAnyViews(relationship)) {
-                try {
-                    Method method = Model.class.getDeclaredMethod("remove", Relationship.class);
-                    method.setAccessible(true);
-                    method.invoke(model, relationship);
-
-                    return true;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+        // remove the relationship from views
+        for (View view : viewSet.getViews()) {
+            if (view instanceof ModelView) {
+                ModelView modelView = (ModelView)view;
+                if (modelView.isRelationshipInView(relationship)) {
+                    modelView.remove(relationship);
                 }
-            } else {
-                return false;
             }
         }
 
-        return linkedRelationshipsRemoved;
+        // now remove the relationship itself
+        try {
+            Method method = Model.class.getDeclaredMethod("remove", Relationship.class);
+            method.setAccessible(true);
+            method.invoke(model, relationship);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean isElementAssociatedWithAnyViews(Element element) {
@@ -412,20 +383,6 @@ public final class Workspace extends AbstractWorkspace implements Documentable {
 
         for (ImageView view : viewSet.getImageViews()) {
             result = result | view.getElement() == element;
-        }
-
-        return result;
-    }
-
-    private boolean isRelationshipAssociatedWithAnyViews(Relationship relationship) {
-        boolean result = false;
-
-        // is the relationship used in any views
-        for (View view : viewSet.getViews()) {
-            if (view instanceof ModelView) {
-                ModelView modelView = (ModelView)view;
-                result = result | modelView.isRelationshipInView(relationship);
-            }
         }
 
         return result;

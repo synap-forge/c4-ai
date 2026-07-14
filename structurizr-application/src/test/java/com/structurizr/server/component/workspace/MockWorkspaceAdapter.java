@@ -60,7 +60,7 @@ class MockWorkspaceAdapter implements WorkspaceAdapter {
     }
 
     @Override
-    public List<Image> getImages(long workspaceId, String branch) {
+    public List<Image> getImages(long workspaceId) {
         return List.of();
     }
 
@@ -70,7 +70,7 @@ class MockWorkspaceAdapter implements WorkspaceAdapter {
     }
 
     @Override
-    public boolean deleteImages(long workspaceId, String branch) {
+    public boolean deleteImages(long workspaceId) {
         return false;
     }
 

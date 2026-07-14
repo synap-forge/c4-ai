@@ -7,7 +7,7 @@ import com.structurizr.server.component.workspace.WorkspaceBranch;
 import com.structurizr.server.component.workspace.WorkspaceComponentException;
 import com.structurizr.server.component.workspace.WorkspaceVersion;
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockHttpServletRequest;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import com.structurizr.util.DateUtils;
@@ -21,7 +21,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ServerWorkspaceApiControllerAuthenticationDisabledTests extends AbstractTestsBase {
+public class ServerWorkspaceApiControllerAuthenticationDisabledTests extends ControllerTestsBase {
 
     private ServerWorkspaceApiController controller;
     private final MockHttpServletRequest request = new MockHttpServletRequest();
@@ -31,7 +31,7 @@ public class ServerWorkspaceApiControllerAuthenticationDisabledTests extends Abs
         controller = new ServerWorkspaceApiController();
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {});
 
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
     }
 
     @Test
@@ -256,7 +256,7 @@ public class ServerWorkspaceApiControllerAuthenticationDisabledTests extends Abs
 
         ApiResponse apiResponse = controller.unlockWorkspace(1, "user2@example.com", "agent", "");
 
-        assertEquals("Workspace is not locked by user2@example.com", apiResponse.getMessage());
+        assertEquals("Could not unlock workspace", apiResponse.getMessage());
         assertTrue(workspaceMetaData.isLockedBy("user1@example.com", "agent"));
     }
 
@@ -312,7 +312,7 @@ public class ServerWorkspaceApiControllerAuthenticationDisabledTests extends Abs
 
         String json = controller.getBranches(1, "");
         assertEquals("""
-                {"id":1,"branches":["branch1","branch2"]}""", json);
+                ["branch1","branch2"]""", json);
     }
 
     @Test

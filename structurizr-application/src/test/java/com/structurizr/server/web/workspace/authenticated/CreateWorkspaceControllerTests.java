@@ -3,7 +3,7 @@ package com.structurizr.server.web.workspace.authenticated;
 import com.structurizr.configuration.StructurizrProperties;
 import com.structurizr.server.component.workspace.WorkspaceComponentException;
 import com.structurizr.server.domain.User;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CreateWorkspaceControllerTests extends AbstractTestsBase {
+public class CreateWorkspaceControllerTests extends ControllerTestsBase {
 
     private CreateWorkspaceController controller;
     private ModelMap model;
@@ -26,7 +26,7 @@ public class CreateWorkspaceControllerTests extends AbstractTestsBase {
 
     @Test
     public void createWorkspace_CreatesAWorkspace_WhenAuthenticationIsDisabled() {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
             @Override
@@ -41,7 +41,7 @@ public class CreateWorkspaceControllerTests extends AbstractTestsBase {
 
     @Test
     void createWorkspace_CreatesAWorkspace_WhenAuthenticationIsEnabledAndNoAdminUsersAreDefined() {
-        configureAsServerWithAuthenticationEnabled();
+        enableAuthentication();
         setUser("user@example.com");
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
@@ -59,7 +59,7 @@ public class CreateWorkspaceControllerTests extends AbstractTestsBase {
     void createWorkspace_CreatesAWorkspace_WhenAuthenticationIsEnabledAndAnAdminUserIsDefined() {
         Properties properties = new Properties();
         properties.setProperty(StructurizrProperties.ADMIN_USERS_AND_ROLES, "admin@example.com");
-        configureAsServerWithAuthenticationEnabled(properties);
+        enableAuthentication(properties);
         setUser("admin@example.com");
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {
@@ -77,7 +77,7 @@ public class CreateWorkspaceControllerTests extends AbstractTestsBase {
     void createWorkspace_ReturnsThe404Page_WhenAuthenticationIsEnabledAndTheUserIsNotAnAdmin() {
         Properties properties = new Properties();
         properties.setProperty(StructurizrProperties.ADMIN_USERS_AND_ROLES, "admin@example.com");
-        configureAsServerWithAuthenticationEnabled(properties);
+        enableAuthentication(properties);
         setUser("user@example.com");
 
         controller.setWorkspaceComponent(new MockWorkspaceComponent() {});

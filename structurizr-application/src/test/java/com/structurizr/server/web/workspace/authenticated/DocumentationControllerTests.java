@@ -2,7 +2,7 @@ package com.structurizr.server.web.workspace.authenticated;
 
 import com.structurizr.server.component.workspace.WorkspaceComponentException;
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import java.util.Base64;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class DocumentationControllerTests extends AbstractTestsBase {
+public class DocumentationControllerTests extends ControllerTestsBase {
 
     private DocumentationController controller;
     private ModelMap model;
@@ -26,7 +26,7 @@ public class DocumentationControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDocumentation_ReturnsTheDocumentationPageForSoftwareSystem()  {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
 
@@ -53,7 +53,7 @@ public class DocumentationControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDocumentation_ReturnsTheDocumentationPageForContainer()  {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
 
@@ -80,7 +80,7 @@ public class DocumentationControllerTests extends AbstractTestsBase {
 
     @Test
     void showAuthenticatedDocumentation_ReturnsTheDocumentationPageForComponent()  {
-        configureAsServerWithAuthenticationDisabled();
+        disableAuthentication();
 
         final WorkspaceMetadata workspaceMetaData = new WorkspaceMetadata(1);
 

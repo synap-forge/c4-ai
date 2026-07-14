@@ -244,7 +244,6 @@
         structurizr.diagram.onViewChanged(viewChanged);
         structurizr.diagram.onAnimationStarted(animationStarted);
         structurizr.diagram.onAnimationStopped(animationStopped);
-
         structurizr.scripting = new function() {
 
             this.isDiagramRendered = function() {
@@ -252,7 +251,6 @@
             };
 
             this.exportCurrentDiagramToPNG = function(options, callback) {
-                console.log("Deprecated - use structurizr.scripting.exportViews() instead");
                 if (options === undefined) {
                     options = {};
                 }
@@ -269,12 +267,10 @@
             };
 
             this.exportCurrentDiagramKeyToPNG = function(callback) {
-                console.log("Deprecated - use structurizr.scripting.exportViews() instead");
                 return structurizr.diagram.exportCurrentDiagramKeyToPNG(callback);
             };
 
             this.exportCurrentDiagramToSVG = function(options) {
-                console.log("Deprecated - use structurizr.scripting.exportViews() instead");
                 if (options === undefined) {
                     options = {};
                 }
@@ -287,12 +283,7 @@
             };
 
             this.exportCurrentDiagramKeyToSVG = function() {
-                console.log("Deprecated - use structurizr.scripting.exportViews() instead");
                 return structurizr.diagram.exportCurrentDiagramKeyToSVG();
-            };
-
-            this.exportViews = function(views, options, viewCallback, finishedCallback) {
-                structurizr.diagram.exportViews(views, options, viewCallback, finishedCallback);
             };
 
             this.getViews = function() {
@@ -320,22 +311,12 @@
                 return structurizr.diagram.getCurrentViewOrFilter();
             }
 
-            this.changeView = function(viewKey, callback) {
+            this.changeView = function(viewKey) {
                 const view = structurizr.workspace.findViewByKey(viewKey);
                 if (view) {
-                    changeView(view, callback);
+                    changeView(view);
                 } else {
                     throw 'A view with the key "' + viewKey + '" could not be found.';
-                }
-            };
-
-            this.setDarkMode = function(bool) {
-                if (bool) {
-                    structurizr.ui.setRenderingMode(structurizr.ui.RENDERING_MODE_DARK);
-                    structurizr.diagram.setDarkMode(true);
-                } else {
-                    structurizr.ui.setRenderingMode(structurizr.ui.RENDERING_MODE_LIGHT);
-                    structurizr.diagram.setDarkMode(false);
                 }
             };
 
@@ -567,16 +548,14 @@
     }
 
     function workspaceChanged() {
-        if (structurizr.diagram.isEditable()) {
-            $('#undoButton').prop('disabled', structurizr.diagram.undoStackIsEmpty());
+        $('#undoButton').prop('disabled', structurizr.diagram.undoStackIsEmpty());
 
-            $('#saveButton').removeClass('btn-default');
-            $('#saveButton').addClass('btn-danger');
-            $('#saveButton img').addClass('icon-white');
-            $('#saveButton').prop('disabled', false);
+        $('#saveButton').removeClass('btn-default');
+        $('#saveButton').addClass('btn-danger');
+        $('#saveButton img').addClass('icon-white');
+        $('#saveButton').prop('disabled', false);
 
-            unsavedChanges = true;
-        }
+        unsavedChanges = true;
     }
 
     function selectDiagramByView(view) {

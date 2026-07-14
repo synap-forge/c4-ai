@@ -30,7 +30,8 @@ class LocalFileSystemMultipleWorkspaceAdapterTests extends AbstractWorkspaceAdap
 
         Properties properties = new Properties();
         properties.setProperty(DATA_DIRECTORY, dataDirectory.getAbsolutePath());
-        configureAsLocal(properties);
+
+        Configuration.init(Profile.Local, properties);
 
         workspaceAdapter = new LocalFileSystemMultipleWorkspaceAdapter();
     }
@@ -131,12 +132,7 @@ class LocalFileSystemMultipleWorkspaceAdapterTests extends AbstractWorkspaceAdap
     }
 
     @Override
-    void image_Branch() {
-        // no supported
-    }
-
-    @Override
-    void images_Branch() {
+    void image_Branch() throws Exception {
         // no supported
     }
 
