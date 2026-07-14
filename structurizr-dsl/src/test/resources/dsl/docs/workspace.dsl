@@ -8,7 +8,9 @@ workspace {
             !docs docs/softwaresystem
 
             container "Container" {
-                !docs docs/softwaresystem/container
+                !docs docs/softwaresystem/container {
+                    exclude "README.*"
+                }
 
                 component "Component" {
                     !docs docs/softwaresystem/container/component/1.md

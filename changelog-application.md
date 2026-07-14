@@ -1,10 +1,97 @@
 # Changelog
 
-## unreleased
+## 2026.04.19
 
+- Updates Structurizr for Java library to [v6.2.0](https://github.com/structurizr/structurizr/releases/tag/v6.2.0).
+- There are now two versions of the prebuilt binaries - see [Prebuilt binaries](https://docs.structurizr.com/binaries) for details. 
 - Fixes https://github.com/structurizr/structurizr/issues/22 (Diagram-as-text plugin rendering (Mermaid) for Markdown docs not compatible for Windows line endings).
-- Adds perspective specific styles for elements and relationships.
-- Adds support for dynamic perspectives.
+
+### local
+
+- Fixes https://github.com/structurizr/structurizr/issues/51 (window.location.hash not scrolled to on refresh).
+- Adds support for Markdown footnotes (https://github.com/structurizr/structurizr/issues/38).
+
+### server
+
+- Fixes https://github.com/structurizr/structurizr/issues/51 (window.location.hash not scrolled to on refresh).
+- Adds support for Markdown footnotes (https://github.com/structurizr/structurizr/issues/38).
+- Replaces `-` with `.` in configuration property names.
+
+### pull
+
+- Don't create archive versions of workspace.
+
+### export
+
+- Adds support for `export -format png|svg -url <url>` - see https://docs.structurizr.com/export
+- Adds support for `export -format png|svg -workspace <file>` - see https://docs.structurizr.com/export
+
+### generate
+
+- Adds a `generate system-landscape` command - see https://docs.structurizr.com/generate.
+
+## 2026.03.06
+
+- Adds [perspective specific styles](https://docs.structurizr.com/dsl/cookbook/perspectives-static/) for elements and relationships.
+- Adds support for [dynamic perspectives](https://docs.structurizr.com/dsl/cookbook/perspectives-dynamic/).
+- Adds a way to install themes when using `push`, `validate`, etc commands - see [Installing themes](https://docs.structurizr.com/server/diagrams/themes#installing-themes).
+- Removes `-themes` parameter from the `export` command in favour of the above.
+
+### server
+
+- Changes the output from the `GET /api/workspace/<id>/branches` endpoint.
+- Fixes https://github.com/structurizr/structurizr/issues/34 (JSON endpoint produces text/plain instead of application/json).
+- Adds a workspace size limit of 1MB (configurable via `structurizr.workspace.maxsize`).
+- Renames configuration property `structurizr.maxworkspaceversions` to `structurizr.workspace.maxversions`.
+- Documentation search results now link to subsections (https://github.com/structurizr/structurizr/issues/2).
+- Adds API endpoints to upload images to a workspace - `/api/workspace/{workspaceId}/images/{filename}` and `/api/workspace/{workspaceId}/branch/{branch}/images/{filename}`.
+- Fixes https://github.com/structurizr/structurizr/issues/40 (Diagram thumbnails rendered very small when using structurizr local with Firefox).
+
+### local
+
+- Adds a workspace size limit of 1MB (configurable via `structurizr.workspace.maxsize`).
+- Documentation search results now link to subsections (https://github.com/structurizr/structurizr/issues/2).
+- Fixes https://github.com/structurizr/structurizr/issues/40 (Diagram thumbnails rendered very small when using structurizr local with Firefox). 
+
+### playground
+
+- Adds a workspace size limit of 1MB (configurable via `structurizr.workspace.maxsize`).
+
+### export
+
+- Diagrams can be bookmarked in static site exports by copying the URL (including the hash).
+
+### branches
+
+- Adds a `-json` flag to enable JSON output.
+
+### create
+
+- Adds a `create` command to create a workspace on a Structurizr server.
+
+### delete
+
+- Adds the ability to delete a workspace (admin API key is required).
+- Confirmation prompt added.
+- Adds a `-force` flag to force deletion (non-interactive/quiet mode).
+
+### pull
+
+- Removes support for `-id *` in favour of making `-id` optional.
+- Adds a `-json` flag to enable JSON output (works only when pulling a single workspace).
+
+### push
+
+- Adds a `-trim <true|false>` parameter to run `Workspace.trim()` before pushing the workspace.
+- Adds a `-image <file>` parameter to upload an image to a workspace.
+
+### inspect
+
+- Uses stdout rather than `log.info()`.
+
+### list
+
+- Uses stdout rather than `log.info()`.
 
 ## 2026.02.01
 
