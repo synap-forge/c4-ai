@@ -36,7 +36,7 @@ public abstract class AbstractCommand {
         return name;
     }
 
-    public abstract void run(String... args) throws Exception;
+    public abstract boolean run(String... args) throws Exception;
 
     String getAgent() {
         return "structurizr/" + getClass().getPackage().getImplementationVersion();
@@ -49,6 +49,7 @@ public abstract class AbstractCommand {
         if (workspacePathAsString.endsWith("json")) {
             if (workspacePathAsString.startsWith("http://") || workspacePathAsString.startsWith("https")) {
                 String json = readFromUrl(workspacePathAsString);
+                installThemes(new File("."));
                 workspace = WorkspaceUtils.fromJson(json);
             } else {
                 File workspaceFile = new File(workspacePathAsString);
@@ -60,6 +61,7 @@ public abstract class AbstractCommand {
                     throw new StructurizrException(workspaceFile.getAbsolutePath() + " is not a JSON or DSL file");
                 }
 
+                installThemes(workspaceFile.getParentFile());
                 workspace = WorkspaceUtils.loadWorkspaceFromJson(workspaceFile);
             }
 

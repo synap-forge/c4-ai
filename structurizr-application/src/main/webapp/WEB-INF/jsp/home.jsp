@@ -99,7 +99,7 @@
         $(this).attr('src', '/static/img/thumbnail-not-available.png');
     });
 
-    <c:forEach var="workspace" items="${workspaces}">
-    quickNavigation.addItem('${workspace.id} - <c:out value="${workspace.name}" escapeXml="true" />', '${workspace.urlPrefix}/${workspace.id}');
+    <c:forEach var="workspace" items="${quickNavigationItems}">
+    quickNavigation.addItem('<c:out value="${workspace.name}" escapeXml="true" />&nbsp;<span class="workspaceId">(#${workspace.id})</span>', '${workspace.urlPrefix}/${workspace.id}');
     </c:forEach>
 </script>

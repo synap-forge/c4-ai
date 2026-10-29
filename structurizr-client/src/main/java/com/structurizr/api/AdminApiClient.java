@@ -20,7 +20,6 @@ public class AdminApiClient extends AbstractApiClient {
     private static final Log log = LogFactory.getLog(AdminApiClient.class);
 
     private final String apiKey;
-
     /**
      * Creates a new admin API client.
      *

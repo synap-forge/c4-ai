@@ -2,7 +2,9 @@
 
 <script type="text/javascript" src="<c:url value="/static/js/structurizr-embed.js" />"></script>
 <script type="text/javascript" src="<c:url value="/static/js/structurizr-content.js" />"></script>
-<script type="text/javascript" src="/static/js/markdown-it-13.0.1.min.js"></script>
+<script type="text/javascript" src="/static/js/highlight-11.11.1.min.js" type="module"></script>
+<script type="text/javascript" src="/static/js/markdown-it-14.1.1.min.js"></script>
+<script text="text/javascript" src="/static/js/markdown-it-footnote-4.0.0.min.js"></script>
 <script type="text/javascript" src="/static/js/katex-0.16.27.min.js"></script>
 <script type="text/javascript" src="/static/js/asciidoctor-2.2.6.min.js"></script>
 
@@ -71,7 +73,7 @@
                 <div id="decisionDate" class="centered"></div>
                 <div class="centered" style="margin-top: 10px">
                     <span id="decisionStatus" class="centered hidden"></span>
-                    <button id="graphButton" type="button" class="btn btn-default hidden" style="height: 42px; margin-bottom: 8px;"><img src="/static/bootstrap-icons/diagram-2.svg" class="icon-btn" /> Decision explorer</button>
+                    <button id="graphButton" type="button" class="btn btn-default hidden"><img src="/static/bootstrap-icons/diagram-2.svg" class="icon-btn" /> Decision explorer</button>
                 </div>
             </div>
 
@@ -115,6 +117,7 @@
                 structurizr.workspace,
                 '/static',
                 '<c:out value="${urlPrefix}" />',
+                '${workspace.branch}',
                 ${structurizrConfiguration.safeMode});
 
             initDecisionScopeAndOrder();
@@ -467,6 +470,9 @@
 
             rewriteInternalWorkspaceLinks();
             highlightNavigation();
+
+            // syntax highlighting
+            hljs.highlightAll();
         }
     }
 

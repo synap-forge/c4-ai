@@ -91,7 +91,7 @@ public class ExportCommand extends AbstractCommand {
         super("export");
     }
 
-    public void run(String... args) throws Exception {
+    public boolean run(String... args) throws Exception {
         Options options = new Options();
 
         Option option = new Option("w", "workspace", true, "Path or URL to the workspace JSON file/DSL file(s)");
@@ -103,10 +103,6 @@ public class ExportCommand extends AbstractCommand {
         options.addOption(option);
 
         option = new Option("o", "output", true, "Path to an output directory");
-        option.setRequired(false);
-        options.addOption(option);
-
-        option = new Option("t", "themes", true, "Path to themes");
         option.setRequired(false);
         options.addOption(option);
 
@@ -130,7 +126,78 @@ public class ExportCommand extends AbstractCommand {
         } catch (ParseException e) {
             log.error(e.getMessage());
             showHelp(options);
-            System.exit(1);
+            return false;
+        }
+
+        if (PNG_FORMAT.equals(format) || SVG_FORMAT.equals(format)) {
+            // check the build includes the Playwright exporter
+            PlaywrightExporter playwrightExporter = null;
+            try {
+                Class<?> clazz = Class.forName(PlaywrightExporter.class.getName() + "Impl");
+                playwrightExporter = (PlaywrightExporter)clazz.getDeclaredConstructor().newInstance();
+            } catch (ClassNotFoundException e) {
+                log.fatal("Exporting to PNG/SVG is not supported in this build");
+                return false;
+            }
+
+            if (StringUtils.isNullOrEmpty(workspacePathAsString) && StringUtils.isNullOrEmpty(url)) {
+                log.fatal("One of url or workspace must be provided");
+                return false;
+            }
+
+            ColorScheme colorScheme = null;
+            if (ColorScheme.Light.toString().equalsIgnoreCase(mode)) {
+                colorScheme = ColorScheme.Light;
+            } else if (ColorScheme.Dark.toString().equalsIgnoreCase(mode)) {
+                colorScheme = ColorScheme.Dark;
+            } else {
+                log.fatal("Invalid mode " + mode + " - expected light or dark");
+                return false;
+            }
+
+            if (!StringUtils.isNullOrEmpty(workspacePathAsString)) {
+                try {
+                    Workspace workspace = loadWorkspace(workspacePathAsString);
+                    File tempDir = Files.createTempDirectory("structurizr").toFile();
+                    tempDir.deleteOnExit();
+
+                    if (workspacePathAsString.startsWith("http://") || workspacePathAsString.startsWith("https://")) {
+                        workspacePath = new File(".");
+                    } else {
+                        workspacePath = new File(workspacePathAsString);
+                    }
+
+                    if (outputPath == null) {
+                        outputPath = new File(workspacePath.getCanonicalPath()).getParent();
+                    }
+
+                    File outputDir = new File(outputPath);
+                    outputDir.mkdirs();
+
+                    new StaticSiteExporter().run(workspace, tempDir);
+
+                    playwrightExporter.run("file://" + new File(tempDir, "index.html").getAbsolutePath(), format, colorScheme, animation, outputDir);
+                    return true;
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                    return false;
+                }
+            } else {
+                if (outputPath == null) {
+                    outputPath = ".";
+                }
+
+                File outputDir = new File(outputPath);
+                outputDir.mkdirs();
+
+                playwrightExporter.run(url, format, colorScheme, animation, outputDir);
+                return true;
+            }
+        }
+
+        if (StringUtils.isNullOrEmpty(workspacePathAsString)) {
+            log.fatal("The workspace path parameter must not be null or empty");
+            return false;
         }
 
         log.info("Exporting workspace from " + workspacePathAsString);
@@ -152,7 +219,7 @@ public class ExportCommand extends AbstractCommand {
         if (outputPath == null) {
             outputPath = new File(workspacePath.getCanonicalPath()).getParent();
         }
-        
+
         File outputDir = new File(outputPath);
         outputDir.mkdirs();
 
@@ -218,7 +285,8 @@ public class ExportCommand extends AbstractCommand {
             }
         }
 
-        log.info(" - finished");
+        log.info("Finished");
+        return true;
     }
 
     private void renderPngImages(Workspace workspace, long workspaceId, String outputPath) throws Exception {

@@ -109,7 +109,6 @@ class ApacheLuceneSearchAdapter extends AbstractSearchAdapter {
             doc.add(new StoredField(DESCRIPTION_KEY, toString(workspace.getDescription())));
             doc.add(new TextField(CONTENT_KEY, appendAll(workspace.getName(), workspace.getDescription()), Field.Store.NO));
             indexWriter.addDocument(doc);
-            indexWriter.commit();
 
             for (CustomView view : workspace.getViews().getCustomViews()) {
                 index(workspace, view, indexWriter);
@@ -147,6 +146,7 @@ class ApacheLuceneSearchAdapter extends AbstractSearchAdapter {
                 }
             }
 
+            indexWriter.commit();
         } catch (Exception e) {
             log.error(e);
         }
@@ -222,7 +222,6 @@ class ApacheLuceneSearchAdapter extends AbstractSearchAdapter {
         doc.add(new TextField(CONTENT_KEY, content.toString(), Field.Store.NO));
 
         indexWriter.addDocument(doc);
-        indexWriter.commit();
     }
 
     private String indexElementBasics(Element element) {
@@ -342,7 +341,6 @@ class ApacheLuceneSearchAdapter extends AbstractSearchAdapter {
         doc.add(new StoredField(DESCRIPTION_KEY, ""));
         doc.add(new TextField(CONTENT_KEY, appendAll(title, content), Field.Store.NO));
         indexWriter.addDocument(doc);
-        indexWriter.commit();
     }
 
     private void indexDecision(Workspace workspace, Element element, Decision decision) throws Exception {
@@ -361,7 +359,6 @@ class ApacheLuceneSearchAdapter extends AbstractSearchAdapter {
         doc.add(new StoredField(DESCRIPTION_KEY, decision.getStatus()));
         doc.add(new TextField(CONTENT_KEY, appendAll(decision.getTitle(), decision.getContent(), decision.getStatus()), Field.Store.NO));
         indexWriter.addDocument(doc);
-        indexWriter.commit();
     }
 
     private String appendAll(String... strings) {

@@ -437,7 +437,8 @@ public class StructurizrPlantUMLExporter extends AbstractPlantUMLExporter {
                 style.getColor(),
                 style.getStyle(),
                 renderAsSequenceDiagram(view) ? DEFAULT_STROKE_WIDTH : style.getThickness(),
-                style.getFontSize()
+                style.getFontSize(),
+                style.getWidth()
         );
         plantUMLStyles.add(plantUMLRelationshipStyle);
 

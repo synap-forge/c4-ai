@@ -22,6 +22,7 @@ public class Application {
 		register(new UnlockCommand());
 		register(new BranchesCommand());
 		register(new DeleteCommand());
+		register(new RegenerateApiKeyCommand());
 
 		register(new ExportCommand());
 		register(new MergeCommand());
@@ -31,9 +32,9 @@ public class Application {
 		register(new VersionCommand());
 		register(new AbstractCommand("help") {
 			@Override
-			public void run(String... args) {
+			public boolean run(String... args) {
 				printUsage();
-				System.exit(0);
+				return true;
 			}
 		});
 	}
@@ -48,18 +49,23 @@ public class Application {
 			System.exit(1);
 		}
 
+		boolean success;
 		try {
 			String commandName = args[0];
 			AbstractCommand command = COMMANDS.get(commandName);
 			if (command != null) {
-				command.run(args);
+				success = command.run(args);
 			} else {
 				System.out.println("Unknown command: " + commandName);
 				printUsage();
-				System.exit(1);
+				success = false;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			success = false;
+		}
+
+		if (!success) {
 			System.exit(1);
 		}
 	}

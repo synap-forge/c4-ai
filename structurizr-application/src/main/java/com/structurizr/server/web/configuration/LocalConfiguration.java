@@ -19,8 +19,6 @@ import java.util.Set;
 @Profile("command-local")
 class LocalConfiguration {
 
-    private static final Set<String> PERMITTED_LOCAL_SERVER_NAMES = Set.of("localhost", "127.0.0.1");
-
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);

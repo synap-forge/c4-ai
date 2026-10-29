@@ -1,5 +1,73 @@
 # Changelog
 
+## 2026.10.26
+
+## local
+
+- Fixes https://github.com/structurizr/structurizr/issues/135 (Decision explorer graph overflows its modal on wide screens).
+
+## server
+
+- Fixes https://github.com/structurizr/structurizr/issues/135 (Decision explorer graph overflows its modal on wide screens).
+
+## inspect
+
+- Fixes https://github.com/structurizr/structurizr/issues/131 (inspect exits successfully when 256 violations are shown).
+
+## 2026.09.19
+
+### local
+
+- Enhances quick navigation feature to include all workspaces on home page, irrespective of pagination (https://github.com/structurizr/structurizr/discussions/128).
+- Fixes https://github.com/structurizr/structurizr/issues/130 (Implied/linked relationships not highlighted according to selected perspective). 
+
+### server
+
+- Enhances quick navigation feature to include all workspaces on home page, irrespective of pagination (https://github.com/structurizr/structurizr/discussions/128).
+- Fixes https://github.com/structurizr/structurizr/issues/130 (Implied/linked relationships not highlighted according to selected perspective).
+
+### playground
+
+- Fixes https://github.com/structurizr/structurizr/issues/130 (Implied/linked relationships not highlighted according to selected perspective).
+
+## 2026.06.28
+
+### server
+
+- Fixes https://github.com/structurizr/structurizr/issues/110 ("Link to diagram" in embed diagram lead to different URL between Structurizr SaaS and Structurizr self-hosted instance).
+
+### export
+
+- Fixes https://github.com/structurizr/structurizr/issues/109 (Exporting static site with embedded themes fails when using workspace in JSON format).
+
+### generate
+
+- Fixes https://github.com/structurizr/structurizr/issues/106 ("generate system-landscape" is repeating tags).
+- Fixes https://github.com/structurizr/structurizr/issues/107 ("generate system-landscape" dropping aggregated tags).
+
+## 2026.05.22
+
+- Security updates and minor bug fixes.
+
+## 2026.05.16
+
+- Updates Structurizr for Java library to [v6.2.1](https://github.com/structurizr/structurizr/releases/tag/v6.2.1).
+
+### server
+
+- Adds an endpoint to regenerate the workspace API key (`POST /api/workspace/{workspaceId}/apikey/regenerate`).
+- Adds a [diagram level indicator](https://docs.structurizr.com/server/diagrams/viewer#diagram-level-indicator) and [diagram navigator](https://docs.structurizr.com/server/diagrams/viewer#diagram-navigator) to the diagram viewer.
+- Adds highlight.js support for code blocks in Markdown/AsciiDoc documentation and decisions.
+
+### local
+
+- Adds a [diagram level indicator](https://docs.structurizr.com/server/diagrams/viewer#diagram-level-indicator) and [diagram navigator](https://docs.structurizr.com/server/diagrams/viewer#diagram-navigator) to the diagram viewer.
+- Adds highlight.js support for code blocks in Markdown/AsciiDoc documentation and decisions.
+
+### regenerate-apikey
+
+- Adds a `regenerate-apikey` command to regenerate the API key for a server workspace.
+
 ## 2026.04.19
 
 - Updates Structurizr for Java library to [v6.2.0](https://github.com/structurizr/structurizr/releases/tag/v6.2.0).

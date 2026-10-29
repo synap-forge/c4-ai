@@ -18,7 +18,7 @@ public class PushCommand extends AbstractCommand {
         super("push");
     }
 
-    public void run(String... args) throws Exception {
+    public boolean run(String... args) throws Exception {
         Options options = new Options();
 
         Option option = new Option("url", "apiUrl", true, "Structurizr API URL");
@@ -38,14 +38,22 @@ public class PushCommand extends AbstractCommand {
         options.addOption(option);
 
         option = new Option("w", "workspace", true, "Path or URL to the workspace JSON/DSL file");
-        option.setRequired(true);
+        option.setRequired(false);
+        options.addOption(option);
+
+        option = new Option("i", "image", true, "Path to an PNG/JPG/SVG image");
+        option.setRequired(false);
         options.addOption(option);
 
         option = new Option("passphrase", "passphrase", true, "Client-side encryption passphrase");
         option.setRequired(false);
         options.addOption(option);
 
-        option = new Option("merge", "mergeFromRemote", true, "Whether to merge layout information from the remote workspace");
+        option = new Option("merge", "mergeFromRemote", true, "Whether to merge layout information from the remote workspace (default=true)");
+        option.setRequired(false);
+        options.addOption(option);
+
+        option = new Option("trim", "trim", true, "Whether to trim the workspace before pushing (default=false)");
         option.setRequired(false);
         options.addOption(option);
 
@@ -64,8 +72,10 @@ public class PushCommand extends AbstractCommand {
         String apiKey = "";
         String branch = "";
         String workspacePath = "";
+        String imagePath = "";
         String passphrase = "";
         boolean mergeFromRemote = true;
+        boolean trim = false;
         boolean archive = true;
         boolean debug = false;
 
@@ -77,14 +87,21 @@ public class PushCommand extends AbstractCommand {
             apiKey = cmd.getOptionValue("apiKey");
             branch = cmd.getOptionValue("branch");
             workspacePath = cmd.getOptionValue("workspace");
+            imagePath = cmd.getOptionValue("image");
             passphrase = cmd.getOptionValue("passphrase");
             mergeFromRemote = Boolean.parseBoolean(cmd.getOptionValue("merge", "true"));
+            trim = Boolean.parseBoolean(cmd.getOptionValue("trim", "false"));
             archive = Boolean.parseBoolean(cmd.getOptionValue("archive", "true"));
             debug = cmd.hasOption("debug");
         } catch (ParseException e) {
             log.error(e.getMessage());
             showHelp(options);
-            System.exit(1);
+            return false;
+        }
+
+        if (StringUtils.isNullOrEmpty(workspacePath) && StringUtils.isNullOrEmpty(imagePath)) {
+            log.error("One of -workspace or -image are required");
+            return false;
         }
 
         if (debug) {
@@ -107,14 +124,14 @@ public class PushCommand extends AbstractCommand {
             client.setEncryptionStrategy(new AesEncryptionStrategy(passphrase));
         }
 
-        File archivePath = new File(".");
+            File archivePath = new File(".");
 
-        File path = new File(workspacePath);
-        archivePath = path.getParentFile();
-        if (!path.exists()) {
-            log.error(" - workspace path " + workspacePath + " does not exist");
-            System.exit(1);
-        }
+            File path = new File(workspacePath);
+            archivePath = path.getParentFile();
+            if (!path.exists()) {
+                log.error(" - workspace path " + workspacePath + " does not exist");
+                return false;
+            }
 
         log.info(" - creating new workspace");
         log.info(" - parsing model and views from " + path.getCanonicalPath());
@@ -133,6 +150,7 @@ public class PushCommand extends AbstractCommand {
         client.putWorkspace(workspace);
 
         log.info(" - finished");
+        return true;
     }
 
 }

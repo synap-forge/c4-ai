@@ -3,7 +3,8 @@
 <script type="text/javascript" src="<c:url value="/static/js/structurizr-embed.js" />"></script>
 <script type="text/javascript" src="<c:url value="/static/js/structurizr-content.js" />"></script>
 <script type="text/javascript" src="<c:url value="/static/js/structurizr-documentation.js" />"></script>
-<script type="text/javascript" src="/static/js/markdown-it-13.0.1.min.js"></script>
+<script type="text/javascript" src="/static/js/markdown-it-14.1.1.min.js"></script>
+<script text="text/javascript" src="/static/js/markdown-it-footnote-4.0.0.min.js"></script>
 <script type="text/javascript" src="/static/js/katex-0.16.27.min.js"></script>
 <script type="text/javascript" src="/static/js/asciidoctor-2.2.6.min.js"></script>
 
@@ -111,6 +112,7 @@
                 structurizr.workspace,
                 '/static',
                 '<c:out value="${urlPrefix}" />',
+                '${workspace.branch}',
                 ${structurizrConfiguration.safeMode});
 
             structurizr.scripting = new function() {
@@ -176,6 +178,10 @@
         structurizr.ui.applyWorkspaceLogo();
         resize();
         progressMessage.hide();
+
+        if (window.location.hash !== undefined) {
+            scrollToHash();
+        }
     }
 
     function initDocumentationScopeAndSections() {
@@ -264,7 +270,7 @@
             hash = hash.substring(1);
             const anchor = $('a[name="' + hash + '"]');
             if (anchor && anchor.length > 0) {
-                anchor[0].scrollIntoView(true);
+                anchor[0].scrollIntoView({ behavior: 'instant' });
             }
         } else {
             $('#documentationScopeName')[0].scrollIntoView(false);
@@ -319,6 +325,9 @@
         rewriteInternalWorkspaceLinks();
         assignSectionNumbers();
         renderNavigation();
+
+        // syntax highlighting
+        hljs.highlightAll();
 
         $('#renderingModeLightLink').click(function(event) {
             event.preventDefault();
@@ -611,8 +620,6 @@
         const documentationPanelHeight = (window.innerHeight - topNavigationHeight - padding - navigationDropDownHeight);
         $('#documentationPanel').css('height', documentationPanelHeight + 'px');
 
-        $('.img-thumbnail').css('max-height', 0.8 * documentationPanelHeight);
-
         $('#documentationContent').css('margin-bottom', (0.75 * documentationPanelHeight) + 'px');
         $('#documentationNavigationPanel').css('height', (window.innerHeight - topNavigationHeight - padding) + 'px');
     }
@@ -654,7 +661,7 @@
                             var embeddedDiagramDiv = exportWindow.document.createElement("div");
                             embeddedDiagramDiv.className = 'img-thumbnail';
 
-                            var svgMarkupForDiagram = iframe.contentWindow.structurizr.diagram.exportCurrentDiagramToSVG({ metadata: true, crop: false}).markup;
+                            var svgMarkupForDiagram = iframe.contentWindow.structurizr.diagram.exportCurrentDiagramToSVG({ metadata: true, crop: false, dimensions: false}).markup;
                             var svgMarkupForDiagramKey = iframe.contentWindow.structurizr.diagram.exportCurrentDiagramKeyToSVG();
 
                             var parentDiv = iframe.parentNode;

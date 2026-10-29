@@ -222,7 +222,7 @@ structurizr.ui.ContentRenderer = function(workspace, host, urlPrefix, safeMode) 
                 preparsedContent += "\n";
             }
 
-            return new Asciidoctor().$convert(preparsedContent);
+            return new Asciidoctor().convert(preparsedContent);
         } else {
             // default to Markdown
             return md.render(section.content);

@@ -13,7 +13,7 @@ public class DeleteCommand extends AbstractCommand {
         super("delete");
     }
 
-    public void run(String... args) throws Exception {
+    public boolean run(String... args) throws Exception {
         Options options = new Options();
 
         Option option = new Option("url", "apiUrl", true, "Structurizr API URL");
@@ -24,12 +24,16 @@ public class DeleteCommand extends AbstractCommand {
         option.setRequired(true);
         options.addOption(option);
 
-        option = new Option("key", "apiKey", true, "Workspace API key");
+        option = new Option("key", "apiKey", true, "Workspace/admin API key");
         option.setRequired(false);
         options.addOption(option);
 
         option = new Option("branch", "branch", true, "Branch name");
-        option.setRequired(true);
+        option.setRequired(false);
+        options.addOption(option);
+
+        option = new Option("f", "force", false, "Force deletion (non-interactive/quiet mode)");
+        option.setRequired(false);
         options.addOption(option);
 
         CommandLineParser commandLineParser = new DefaultParser();
@@ -38,6 +42,7 @@ public class DeleteCommand extends AbstractCommand {
         long workspaceId = 1;
         String apiKey = "";
         String branch = "";
+        boolean force = false;
 
         try {
             CommandLine cmd = commandLineParser.parse(options, args);
@@ -46,20 +51,51 @@ public class DeleteCommand extends AbstractCommand {
             workspaceId = Long.parseLong(cmd.getOptionValue("workspaceId"));
             apiKey = cmd.getOptionValue("apiKey");
             branch = cmd.getOptionValue("branch");
+            force = cmd.hasOption("force");
         } catch (ParseException e) {
             log.error(e.getMessage());
             showHelp(options);
-            System.exit(1);
+            return false;
         }
 
-        log.debug("Deleting branch " + branch + " for workspace " + workspaceId + " at " + apiUrl);
-        WorkspaceApiClient client = new WorkspaceApiClient(apiUrl, workspaceId, apiKey);
-        client.setAgent(getAgent());
-        boolean deleted = client.deleteBranch(branch);
+        if (StringUtils.isNullOrEmpty(branch)) {
+            if (!force) {
+                System.out.println("Delete workspace " + workspaceId  + " at " + apiUrl + "? (y/n)");
+                Scanner scanner = new Scanner(System.in);
+                String answer = scanner.nextLine();
+                if (!answer.equalsIgnoreCase("y")) {
+                    return false;
+                }
+            }
 
-        log.debug(" - " + deleted);
+            log.debug("Deleting workspace " + workspaceId + " at " + apiUrl);
 
-        System.exit(deleted ? 0 : 1);
+            AdminApiClient client = new AdminApiClient(apiUrl, apiKey);
+            client.setAgent(getAgent());
+
+            boolean deleted = client.deleteWorkspace(workspaceId);
+            log.debug(" - " + deleted);
+            return deleted;
+        } else {
+            if (!force) {
+                System.out.println("Delete branch " + branch + " from workspace " + workspaceId + " at " + apiUrl + "? (y/n)");
+                Scanner scanner = new Scanner(System.in);
+                String answer = scanner.nextLine();
+                if (!answer.equalsIgnoreCase("y")) {
+                    return false;
+                }
+            }
+
+            log.debug("Deleting branch " + branch + " from workspace " + workspaceId + " at " + apiUrl);
+
+            WorkspaceApiClient client = new WorkspaceApiClient(apiUrl, workspaceId, apiKey);
+            client.setAgent(getAgent());
+
+            boolean deleted = client.deleteBranch(branch);
+            log.debug(" - " + deleted);
+            return deleted;
+        }
+
     }
 
 }

@@ -1,5 +1,33 @@
 # Changelog
 
+## v6.2.4 (26th October 2026)
+
+### structurizr-export
+
+- Fixes https://github.com/structurizr/structurizr/issues/132 (Mermaid sequence export fails to render messages containing semicolons).
+
+## v6.2.3 (17th September 2026)
+
+### structurizr-core
+
+- Fixes https://github.com/structurizr/structurizr/issues/119 ("generate system-landscape" missing group attributes).
+
+## v6.2.2 (28th June 2026)
+
+### structurizr-client
+
+- Bumps dependencies.
+
+## v6.2.1 (15th May 2026)
+
+### structurizr-dsl
+
+- Adds support for `element.group==name` expressions (for use with `include` and `!elements`).
+
+### structurizr-export
+
+- StructurizrPlantUMLExporter: Adds support for the `MaximumWidth` style property for arrow CSS styles (https://github.com/structurizr/structurizr/issues/75).
+
 ## v6.2.0 (18th April 2026)
 
 ### structurizr-core
