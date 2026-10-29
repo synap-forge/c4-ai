@@ -11,6 +11,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>25</maven.compiler.release>
+    <gpg.skip>true</gpg.skip>
   </properties>
 
   <licenses>
@@ -108,6 +109,7 @@
         <artifactId>maven-gpg-plugin</artifactId>
         <version>3.2.7</version>
         <configuration>
+          <skip>${gpg.skip}</skip>
           <keyname>${gpg.key}</keyname>
           <passphrase>${gpg.passphrase}</passphrase>
           <gpgArguments>
@@ -137,6 +139,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.15.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
@@ -169,4 +172,13 @@
     <module>structurizr-application</module>
     <module>structurizr-mcp</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>release-signing</id>
+      <properties>
+        <gpg.skip>false</gpg.skip>
+      </properties>
+    </profile>
+  </profiles>
 </project>

@@ -1,11 +1,13 @@
 package com.structurizr.dsl;
 
-import com.structurizr.documentation.Documentable;
-import com.structurizr.importer.documentation.DefaultImageImporter;
-import com.structurizr.importer.documentation.DocumentationImporter;
-
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.List;
+
+import com.structurizr.documentation.Documentable;
+import com.structurizr.documentation.Section;
+import com.structurizr.importer.documentation.DefaultImageImporter;
+import com.structurizr.importer.documentation.DocumentationImporter;
 
 final class DocsParser extends AbstractParser {
 
@@ -32,6 +34,20 @@ final class DocsParser extends AbstractParser {
         parse(context, context.getComponent(), dslFile, tokens);
     }
 
+    void parseExclude(DocsDslContext context, Tokens tokens) {
+        if (!tokens.includes(PATH_INDEX)) {
+            throw new RuntimeException("Expected: exclude <regex> [regex...]");
+        }
+
+        for (int i = PATH_INDEX; i < tokens.size(); i++) {
+            String regex = tokens.get(i);
+            if (regex.length() >= 2 && regex.startsWith("\"") && regex.endsWith("\"")) {
+                regex = regex.substring(1, regex.length() - 1);
+            }
+            context.addExclude(regex);
+        }
+    }
+
     private void parse(DslContext context, Documentable documentable, File dslFile, Tokens tokens) {
         // !docs <path>
 
@@ -46,24 +62,32 @@ final class DocsParser extends AbstractParser {
         }
 
         String fullyQualifiedClassName = DEFAULT_DOCUMENT_IMPORTER;
-        if (tokens.includes(FQN_INDEX)) {
+        if (tokens.includes(FQN_INDEX) && !"{".equals(tokens.get(FQN_INDEX))) {
             fullyQualifiedClassName = tokens.get(FQN_INDEX);
         }
 
+        importDocumentation(context, documentable, dslFile, tokens.get(PATH_INDEX), fullyQualifiedClassName, List.of());
+    }
+
+    void importDocumentation(DslContext context, Documentable documentable, File dslFile, String pathToken, String fullyQualifiedClassName, List<String> excludes) {
         if (dslFile != null) {
-            File path = new File(dslFile.getParentFile(), tokens.get(PATH_INDEX));
+            File path = new File(dslFile.getParentFile(), pathToken);
 
             if (!path.exists()) {
                 throw new RuntimeException("Documentation path " + path + " does not exist");
             }
 
             try {
-                Class documentationImporterClass = context.loadClass(fullyQualifiedClassName, dslFile);
-                Constructor constructor = documentationImporterClass.getDeclaredConstructor();
+                Class<?> documentationImporterClass = context.loadClass(fullyQualifiedClassName, dslFile);
+                Constructor<?> constructor = documentationImporterClass.getDeclaredConstructor();
                 DocumentationImporter documentationImporter = (DocumentationImporter)constructor.newInstance();
                 documentationImporter.importDocumentation(documentable, path);
 
-                if (!tokens.includes(FQN_INDEX) && path.isDirectory()) {
+                if (!excludes.isEmpty()) {
+                    documentable.getDocumentation().getSections().removeIf(section -> isExcluded(section, excludes));
+                }
+
+                if (DEFAULT_DOCUMENT_IMPORTER.equals(fullyQualifiedClassName) && path.isDirectory()) {
                     DefaultImageImporter imageImporter = new DefaultImageImporter();
                     imageImporter.importDocumentation(documentable, path);
                 }
@@ -73,6 +97,21 @@ final class DocsParser extends AbstractParser {
                 throw new RuntimeException("Error importing documentation from " + path.getAbsolutePath() + ": " + e.getMessage());
             }
         }
+    }
+
+    private boolean isExcluded(Section section, List<String> excludes) {
+        String filename = section.getFilename();
+        if (filename == null) {
+            return false;
+        }
+
+        for (String regex : excludes) {
+            if (filename.matches(regex) || new File(filename).getName().matches(regex)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

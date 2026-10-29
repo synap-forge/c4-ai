@@ -7,7 +7,18 @@ This repo represents the consolidated version of all Structurizr tooling.
 - [Binaries](https://docs.structurizr.com/binaries)
 - [Commands](https://docs.structurizr.com/commands)
 
+## Building from source
 
+[Guide to building Structurizr from source](https://docs.structurizr.com/building)
+```bash
+./mvnw -DexcludedGroups=IntegrationTest package
+```
+
+&& 
+
+```bash
+./mvnw -Dmaven.test.skip=true package
+```
 
 
 java -jar -Dserver.port=9090 -Dstructurizr.themes=/Users/anasiri2/Developments/appsrc/open-sources/structurizr/structurizr-themes/ structurizr-application/target/structurizr-1.0.0.war playground
