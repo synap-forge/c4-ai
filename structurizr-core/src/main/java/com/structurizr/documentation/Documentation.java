@@ -64,6 +64,15 @@ public final class Documentation {
         return new ArrayList<>(sections);
     }
 
+    /**
+     * Removes a section from this documentation.
+     *
+     * @param section the section to remove
+     */
+    public void removeSection(Section section) {
+        sections.remove(section);
+    }
+
     void setSections(Collection<Section> sections) {
         if (sections != null) {
             this.sections = new ArrayList<>(sections);

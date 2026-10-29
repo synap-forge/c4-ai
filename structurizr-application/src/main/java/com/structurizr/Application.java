@@ -21,10 +21,12 @@ public class Application {
 		register(new LockCommand());
 		register(new UnlockCommand());
 		register(new BranchesCommand());
+		register(new CreateCommand());
 		register(new DeleteCommand());
 		register(new RegenerateApiKeyCommand());
 
 		register(new ExportCommand());
+		register(new GenerateCommand());
 		register(new MergeCommand());
 		register(new ValidateCommand());
 		register(new InspectCommand());

@@ -1,5 +1,9 @@
 package com.structurizr.command;
 
+import com.structurizr.api.AdminApiClient;
+import com.structurizr.util.StringUtils;
+import java.util.Scanner;
+
 import com.structurizr.api.WorkspaceApiClient;
 import org.apache.commons.cli.*;
 import org.apache.commons.logging.Log;

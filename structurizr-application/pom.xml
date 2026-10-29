@@ -20,7 +20,7 @@
 
   <properties>
     <app.revision>1.0.0</app.revision>
-    <library.revision>6.0.0</library.revision>
+    <library.revision>6.2.4</library.revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>25</maven.compiler.release>
   </properties>
@@ -64,12 +64,10 @@
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-jasper</artifactId>
-      <version>10.1.59</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
-      <version>10.1.59</version>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet.jsp.jstl</groupId>
@@ -145,22 +143,18 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
-      <version>6.5.11</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
-      <version>6.5.11</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-ldap</artifactId>
-      <version>6.5.11</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-saml2-service-provider</artifactId>
-      <version>6.5.11</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
@@ -292,11 +286,6 @@
       <version>33.7.2-jre</version>
     </dependency>
 
-    <dependency>
-      <groupId>com.microsoft.playwright</groupId>
-      <artifactId>playwright</artifactId>
-      <version>1.51.0</version>
-    </dependency>
 
     <dependency>
       <groupId>org.testcontainers</groupId>
@@ -304,7 +293,6 @@
       <scope>test</scope>
     </dependency>
 
-  </dependencies>
   </dependencies>
 
   <profiles>

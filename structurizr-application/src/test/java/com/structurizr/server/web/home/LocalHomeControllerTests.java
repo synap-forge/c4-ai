@@ -1,7 +1,7 @@
 package com.structurizr.server.web.home;
 
 import com.structurizr.server.domain.WorkspaceMetadata;
-import com.structurizr.server.web.AbstractTestsBase;
+import com.structurizr.server.web.ControllerTestsBase;
 import com.structurizr.server.web.MockWorkspaceComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import java.util.Properties;
 import static com.structurizr.configuration.StructurizrProperties.WORKSPACES_PROPERTY;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class LocalHomeControllerTests extends AbstractTestsBase {
+public class LocalHomeControllerTests extends ControllerTestsBase {
 
     private LocalHomeController controller;
     private ModelMap model;

@@ -112,18 +112,8 @@ public class PullCommand extends AbstractCommand {
         return true;
     }
 
-    private void pullWorkspace(long workspaceId) throws Exception {
-        File file;
-        if (StringUtils.isNullOrEmpty(branch)) {
-            log.info("Pulling workspace " + workspaceId + " from " + apiUrl);
-            file = new File(outputDir, "structurizr-" + workspaceId + "-workspace.json");
-        } else {
-            log.info("Pulling workspace " + workspaceId + " from " + apiUrl + " (branch=" + branch + ")");
-            file = new File(outputDir, "structurizr-" + workspaceId + "-" + branch + "-workspace.json");
-        }
-
+    private void pullWorkspace(long workspaceId, boolean store) throws Exception {
         WorkspaceApiClient client = new WorkspaceApiClient(apiUrl, workspaceId, apiKey);
-        client.setWorkspaceArchiveLocation(outputDir);
         client.setBranch(branch);
         client.setAgent(getAgent());
 
@@ -134,8 +124,23 @@ public class PullCommand extends AbstractCommand {
 
         Workspace workspace = client.getWorkspace();
 
-        WorkspaceUtils.saveWorkspaceToJson(workspace, file);
-        log.info(" - workspace saved as " + file.getCanonicalPath());
+        if (store) {
+            outputDir.mkdirs();
+
+            File file;
+            if (StringUtils.isNullOrEmpty(branch)) {
+                log.info("Pulling workspace " + workspaceId + " from " + apiUrl);
+                file = new File(outputDir, "structurizr-" + workspaceId + "-workspace.json");
+            } else {
+                log.info("Pulling workspace " + workspaceId + " from " + apiUrl + " (branch=" + branch + ")");
+                file = new File(outputDir, "structurizr-" + workspaceId + "-" + branch + "-workspace.json");
+            }
+
+            WorkspaceUtils.saveWorkspaceToJson(workspace, file);
+            log.info(" - workspace saved as " + file.getCanonicalPath());
+        } else {
+            System.out.println(WorkspaceUtils.toJson(workspace, false));
+        }
     }
 
 }

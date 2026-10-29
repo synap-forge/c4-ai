@@ -1,5 +1,6 @@
 package com.structurizr.command;
 
+import com.structurizr.api.StructurizrClientException;
 import com.structurizr.api.WorkspaceApiClient;
 import org.apache.commons.cli.*;
 import org.apache.commons.logging.Log;
@@ -13,7 +14,7 @@ public class UnlockCommand extends AbstractCommand {
         super("unlock");
     }
 
-    public void run(String... args) throws Exception {
+    public boolean run(String... args) throws Exception {
         Options options = new Options();
 
         Option option = new Option("url", "apiUrl", true, "Structurizr API URL");
@@ -43,18 +44,24 @@ public class UnlockCommand extends AbstractCommand {
         } catch (ParseException e) {
             log.error(e.getMessage());
             showHelp(options);
-            System.exit(1);
+            return false;
         }
 
         log.info("Unlocking workspace " + workspaceId + " at " + apiUrl);
         WorkspaceApiClient client = new WorkspaceApiClient(apiUrl, workspaceId, apiKey);
         client.setAgent(getAgent());
-        boolean locked = client.unlockWorkspace();
 
-        log.info(" - unlocked " + locked);
+        boolean unlocked = false;
+        try {
+            unlocked = client.unlockWorkspace();
+            log.info(" - unlocked " + unlocked);
+        } catch (StructurizrClientException e) {
+            log.info(" - " + e.getMessage());
+        }
+
         log.info(" - finished");
 
-        System.exit(locked ? 0 : 1);
+        return unlocked;
     }
 
 }

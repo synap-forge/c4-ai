@@ -341,7 +341,7 @@ public class WorkspaceApiClient extends AbstractApiClient {
         }
     }
 
-    private void debugResponse(CloseableHttpResponse response, String content) {
+    private void debugResponse(org.apache.hc.core5.http.ClassicHttpResponse response, String content) {
         log.debug("Response");
         log.debug("HTTP status code: " + response.getCode());
         if (content != null) {

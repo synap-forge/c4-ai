@@ -103,10 +103,12 @@ public class AdminApiClient extends AbstractApiClient {
     /**
      * Deletes a workspace.
      *
+     * @return true if the API reports success
+     *
      * @param workspaceId       the ID of the workspace to delete
      * @throws StructurizrClientException   if an error occurs
      */
-    public void deleteWorkspace(int workspaceId) throws StructurizrClientException {
+    public boolean deleteWorkspace(long workspaceId) throws StructurizrClientException {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url + WORKSPACE_PATH + "/" + workspaceId))
@@ -125,6 +127,7 @@ public class AdminApiClient extends AbstractApiClient {
             if (response.statusCode() == HttpStatus.SC_OK) {
                 ApiResponse apiResponse = ApiResponse.parse(json);
                 log.debug(apiResponse.getMessage());
+                return apiResponse.isSuccess();
             } else {
                 ApiResponse apiResponse = ApiResponse.parse(json);
                 throw new StructurizrClientException(apiResponse.getMessage());

@@ -170,4 +170,26 @@ public class ServerWorkspaceApiController extends AbstractWorkspaceApiController
         return new ApiResponse(false, "Could not unlock workspace");
     }
 
+    @RequestMapping(value = "/api/workspace/{workspaceId}/apikey/regenerate", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+    public @ResponseBody WorkspaceApiKeyApiResponse regenerateApiKey(@PathVariable("workspaceId") long workspaceId,
+                                                      @RequestHeader(name = HttpHeaders.X_AUTHORIZATION, required = false) String apiKey) {
+
+        if (!Configuration.getInstance().isAuthenticationEnabled()) {
+            throw new ApiException("API keys are not active because authentication is disabled");
+        }
+
+        authoriseRequest(workspaceId, Permission.Write, apiKey);
+
+        WorkspaceMetadata workspaceMetadata = workspaceComponent.getWorkspaceMetadata(workspaceId);
+
+        if (workspaceMetadata.isLocked()) {
+            throw new ApiException("Workspace " + workspaceId + " is locked");
+        }
+
+        String newApiKey = workspaceMetadata.regenerateApiKey();
+        workspaceComponent.putWorkspaceMetadata(workspaceMetadata);
+
+        return new WorkspaceApiKeyApiResponse(workspaceId, newApiKey);
+    }
+
 }

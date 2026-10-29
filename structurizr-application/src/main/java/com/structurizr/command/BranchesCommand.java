@@ -63,7 +63,7 @@ public class BranchesCommand extends AbstractCommand {
             System.out.println(mapper.writeValueAsString(branches));
         } else {
             log.info("Getting branches for workspace " + workspaceId + " at " + apiUrl);
-            for (String branch : branches.getBranches()) {
+            for (String branch : branches) {
                 log.info(" - " + branch);
             }
         }

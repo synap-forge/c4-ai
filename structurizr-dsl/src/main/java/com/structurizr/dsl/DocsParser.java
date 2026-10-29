@@ -84,7 +84,9 @@ final class DocsParser extends AbstractParser {
                 documentationImporter.importDocumentation(documentable, path);
 
                 if (!excludes.isEmpty()) {
-                    documentable.getDocumentation().getSections().removeIf(section -> isExcluded(section, excludes));
+                    documentable.getDocumentation().getSections().stream()
+                            .filter(section -> isExcluded(section, excludes))
+                            .forEach(documentable.getDocumentation()::removeSection);
                 }
 
                 if (DEFAULT_DOCUMENT_IMPORTER.equals(fullyQualifiedClassName) && path.isDirectory()) {
