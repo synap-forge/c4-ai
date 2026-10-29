@@ -7,8 +7,6 @@ import com.structurizr.model.*;
 import com.structurizr.util.FeatureNotEnabledException;
 import com.structurizr.util.StringUtils;
 import com.structurizr.view.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,8 +22,6 @@ import java.util.stream.Collectors;
  * Main DSL parser class - forms the API for using the parser.
  */
 public final class StructurizrDslParser extends StructurizrDslTokens {
-
-    private static final Log log = LogFactory.getLog(StructurizrDslParser.class);
 
     private static final String BOM = "\uFEFF";
 
@@ -129,6 +125,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
      * @param restricted        true for restricted mode, false otherwise
      */
     @Deprecated
+    @SuppressWarnings("DeprecatedIsStillUsed")
     public void setRestricted(boolean restricted) {
         features.configure(Features.ENVIRONMENT, !restricted);
         features.configure(Features.FILE_SYSTEM, !restricted);
@@ -252,10 +249,8 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
             }
 
             try {
-                if (EMPTY_LINE_PATTERN.matcher(line).matches()) {
-                    // do nothing
-                } else if (COMMENT_PATTERN.matcher(line).matches()) {
-                    // do nothing
+                if (EMPTY_LINE_PATTERN.matcher(line).matches() || COMMENT_PATTERN.matcher(line).matches()) {
+                    continue;
                 } else if (inContext(InlineScriptDslContext.class)) {
                     if (DslContext.CONTEXT_END_TOKEN.equals(line.trim())) {
                         endContext();
@@ -279,7 +274,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     String firstToken = tokens.get(0);
 
                     if (line.trim().startsWith(MULTI_LINE_COMMENT_START_TOKEN) && line.trim().endsWith(MULTI_LINE_COMMENT_END_TOKEN)) {
-                        // do nothing
+                        continue;
                     } else if (firstToken.startsWith(MULTI_LINE_COMMENT_START_TOKEN)) {
                         startContext(new CommentDslContext());
 
@@ -287,7 +282,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         endContext();
 
                     } else if (inContext(CommentDslContext.class)) {
-                        // do nothing
+                        continue;
 
                     } else if (DslContext.CONTEXT_END_TOKEN.equals(tokens.get(0))) {
                         endContext();
@@ -334,9 +329,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                                 String filename = scriptParser.parseExternal(tokens.withoutContextStartToken());
                                 startContext(new ExternalScriptDslContext(getContext(), dslFile, this, filename));
 
-                                if (shouldStartContext(tokens)) {
-                                    // we'll wait for parameters before executing the script
-                                } else {
+                                if (!shouldStartContext(tokens)) {
                                     endContext();
                                 }
                             }
@@ -609,13 +602,13 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         DeploymentNode deploymentNode = getContext(DeploymentNodeDslContext.class).getDeploymentNode();
                         startContext(new DeploymentNodeDslContext(deploymentNode, group));
                         registerIdentifier(identifier, group);
-                    } else if ((TAGS_TOKEN.equalsIgnoreCase(firstToken) || TAG_TOKEN.equalsIgnoreCase(firstToken)) && inContext(ModelItemDslContext.class) && !isGroup(getContext())) {
+                    } else if ((TAGS_TOKEN.equalsIgnoreCase(firstToken) || TAG_TOKEN.equalsIgnoreCase(firstToken)) && inContext(ModelItemDslContext.class) && isNotGroup(getContext())) {
                         new ModelItemParser().parseTags(getContext(ModelItemDslContext.class), tokens);
 
                     } else if ((TAGS_TOKEN.equalsIgnoreCase(firstToken) || TAG_TOKEN.equalsIgnoreCase(firstToken)) && inContext(ModelItemsDslContext.class)) {
                         new ModelItemsParser().parseTags(getContext(ModelItemsDslContext.class), tokens);
 
-                    } else if (DESCRIPTION_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementDslContext.class) && !isGroup(getContext())) {
+                    } else if (DESCRIPTION_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementDslContext.class) && isNotGroup(getContext())) {
                         new ModelItemParser().parseDescription(getContext(ElementDslContext.class), tokens);
 
                     } else if (DESCRIPTION_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementsDslContext.class)) {
@@ -642,7 +635,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (INSTANCES_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentNodeDslContext.class)) {
                         new DeploymentNodeParser().parseInstances(getContext(DeploymentNodeDslContext.class), tokens);
 
-                    } else if (URL_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemDslContext.class) && !isGroup(getContext())) {
+                    } else if (URL_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemDslContext.class) && isNotGroup(getContext())) {
                         new ModelItemParser().parseUrl(getContext(ModelItemDslContext.class), tokens);
 
                     } else if (URL_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemsDslContext.class)) {
@@ -657,7 +650,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (PROPERTIES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ConfigurationDslContext.class)) {
                         startContext(new PropertiesDslContext(getContext(ConfigurationDslContext.class).getWorkspace()));
 
-                    } else if (PROPERTIES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemDslContext.class) && !isGroup(getContext())) {
+                    } else if (PROPERTIES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemDslContext.class) && isNotGroup(getContext())) {
                         startContext(new PropertiesDslContext(getContext(ModelItemDslContext.class).getModelItem()));
 
                     } else if (PROPERTIES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemsDslContext.class)) {
@@ -681,7 +674,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (inContext(PropertiesDslContext.class)) {
                         new PropertyParser().parse(getContext(PropertiesDslContext.class), tokens);
 
-                    } else if (PERSPECTIVES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemDslContext.class) && !isGroup(getContext())) {
+                    } else if (PERSPECTIVES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemDslContext.class) && isNotGroup(getContext())) {
                         startContext(new PerspectivesDslContext(getContext(ModelItemDslContext.class).getModelItem()));
 
                     } else if (PERSPECTIVES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemsDslContext.class)) {
@@ -1101,6 +1094,9 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (EXCLUDE_IN_VIEW_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentViewDslContext.class)) {
                         new DeploymentViewContentParser().parseExclude(getContext(DeploymentViewDslContext.class), tokens);
 
+                    } else if (EXCLUDE_IN_VIEW_TOKEN.equalsIgnoreCase(firstToken) && inContext(DocsDslContext.class)) {
+                        new DocsParser().parseExclude(getContext(DocsDslContext.class), tokens);
+
                     } else if (ANIMATION_STEP_IN_VIEW_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentViewDslContext.class)) {
                         new DeploymentViewAnimationStepParser().parse(getContext(DeploymentViewDslContext.class), tokens);
 
@@ -1208,28 +1204,52 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                     } else if (DOCS_TOKEN.equalsIgnoreCase(firstToken) && inContext(WorkspaceDslContext.class)) {
                         if (features.isEnabled(Features.DOCUMENTATION)) {
-                            new DocsParser().parse(getContext(WorkspaceDslContext.class), dslFile, tokens);
+                            if (shouldStartContext(tokens)) {
+                                Tokens docsTokens = tokens.withoutContextStartToken();
+                                String fqn = docsTokens.includes(2) ? docsTokens.get(2) : "com.structurizr.importer.documentation.DefaultDocumentationImporter";
+                                startContext(new DocsDslContext(dslFile, getContext(WorkspaceDslContext.class).getWorkspace(), docsTokens.get(1), fqn));
+                            } else {
+                                new DocsParser().parse(getContext(WorkspaceDslContext.class), dslFile, tokens);
+                            }
                         } else {
                             throw new FeatureNotEnabledException(Features.DOCUMENTATION, firstToken + " is not permitted");
                         }
 
                     } else if (DOCS_TOKEN.equalsIgnoreCase(firstToken) && inContext(SoftwareSystemDslContext.class)) {
                         if (features.isEnabled(Features.DOCUMENTATION)) {
-                            new DocsParser().parse(getContext(SoftwareSystemDslContext.class), dslFile, tokens);
+                            if (shouldStartContext(tokens)) {
+                                Tokens docsTokens = tokens.withoutContextStartToken();
+                                String fqn = docsTokens.includes(2) ? docsTokens.get(2) : "com.structurizr.importer.documentation.DefaultDocumentationImporter";
+                                startContext(new DocsDslContext(dslFile, getContext(SoftwareSystemDslContext.class).getSoftwareSystem(), docsTokens.get(1), fqn));
+                            } else {
+                                new DocsParser().parse(getContext(SoftwareSystemDslContext.class), dslFile, tokens);
+                            }
                         } else {
                             throw new FeatureNotEnabledException(Features.DOCUMENTATION, firstToken + " is not permitted");
                         }
 
                     } else if (DOCS_TOKEN.equalsIgnoreCase(firstToken) && inContext(ContainerDslContext.class)) {
                         if (features.isEnabled(Features.DOCUMENTATION)) {
-                            new DocsParser().parse(getContext(ContainerDslContext.class), dslFile, tokens);
+                            if (shouldStartContext(tokens)) {
+                                Tokens docsTokens = tokens.withoutContextStartToken();
+                                String fqn = docsTokens.includes(2) ? docsTokens.get(2) : "com.structurizr.importer.documentation.DefaultDocumentationImporter";
+                                startContext(new DocsDslContext(dslFile, getContext(ContainerDslContext.class).getContainer(), docsTokens.get(1), fqn));
+                            } else {
+                                new DocsParser().parse(getContext(ContainerDslContext.class), dslFile, tokens);
+                            }
                         } else {
                             throw new FeatureNotEnabledException(Features.DOCUMENTATION, firstToken + " is not permitted");
                         }
 
                     } else if (DOCS_TOKEN.equalsIgnoreCase(firstToken) && inContext(ComponentDslContext.class)) {
                         if (features.isEnabled(Features.DOCUMENTATION)) {
-                            new DocsParser().parse(getContext(ComponentDslContext.class), dslFile, tokens);
+                            if (shouldStartContext(tokens)) {
+                                Tokens docsTokens = tokens.withoutContextStartToken();
+                                String fqn = docsTokens.includes(2) ? docsTokens.get(2) : "com.structurizr.importer.documentation.DefaultDocumentationImporter";
+                                startContext(new DocsDslContext(dslFile, getContext(ComponentDslContext.class).getComponent(), docsTokens.get(1), fqn));
+                            } else {
+                                new DocsParser().parse(getContext(ComponentDslContext.class), dslFile, tokens);
+                            }
                         } else {
                             throw new FeatureNotEnabledException(Features.DOCUMENTATION, firstToken + " is not permitted");
                         }
@@ -1449,7 +1469,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
     private <T> T getContext(Class<T> clazz) throws StructurizrDslParserException {
         if (inContext(clazz)) {
-            return (T)contextStack.peek();
+            return clazz.cast(contextStack.peek());
         } else {
             throw new StructurizrDslParserException("Expected " + clazz.getName() + " but got " + contextStack.peek().getClass().getName());
         }
@@ -1466,12 +1486,12 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
         }
     }
 
-    private boolean isGroup(DslContext context) {
+    private boolean isNotGroup(DslContext context) {
         if (context instanceof GroupableDslContext) {
-            return ((GroupableDslContext)context).hasGroup();
+            return !((GroupableDslContext)context).hasGroup();
         }
 
-        return false;
+        return true;
     }
 
     public Features getFeatures() {
@@ -1514,7 +1534,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
     }
 
     private Archetype getArchetype(String archetypeType, String archetypeName) {
-        Archetype archetype = null;
+        Archetype archetype;
 
         if (RELATIONSHIP_TOKEN.equals(archetypeType)) {
             if (archetypeName.startsWith(RELATIONSHIP_ARCHETYPE_PREFIX) && archetypeName.endsWith(RELATIONSHIP_ARCHETYPE_SUFFIX)) {
@@ -1568,6 +1588,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
      * @param name      the name of the constant
      * @return  the value, or an empty string if the named constant doesn't exist
      */
+    @SuppressWarnings("unused")
     public String getConstant(String name) {
         NameValuePair nameValuePair = constantsAndVariables.get(name);
         if (nameValuePair != null) {
@@ -1582,6 +1603,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
      * @param name      the name of the constant
      * @param value     the value of the constant
      */
+    @SuppressWarnings("unused")
     public void addConstant(String name, String value) {
         if (StringUtils.isNullOrEmpty(name)) {
             throw new IllegalArgumentException("A constant name must be specified");
@@ -1614,7 +1636,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
         addConstant(nameValuePair);
     }
 
-    private boolean inContext(Class clazz) {
+    private boolean inContext(Class<?> clazz) {
         if (contextStack.empty()) {
             return false;
         }
